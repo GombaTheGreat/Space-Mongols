@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space Mongols | Tengri Star Khanate</title>
+  <meta name="description" content="Explore Space Mongols: Karakorum Drift, a shipboard space opera with 10 character cards, a storyteller card, RC2 lorebook, cover art, and Space Shagai.">
+  <style>
+    :root {
+      --bg-void: #05070b;
+      --bg-deep: #080b12;
+      --bg-panel: rgba(12, 18, 28, 0.86);
+      --bg-panel-soft: rgba(18, 25, 38, 0.68);
+      --bg-panel-hard: #111825;
+      --ink-primary: #f2eee6;
+      --ink-secondary: #c9c0b3;
+      --ink-muted: #8f8678;
+      --line-soft: rgba(220, 190, 140, 0.22);
+      --line-cold: rgba(150, 175, 220, 0.16);
+      --accent-brass: #c79a4b;
+      --accent-ember: #d06b35;
+      --accent-star: #9cb8ff;
+      --accent-jade: #88b58e;
+      --danger-blood: #8f2f2f;
+      --shadow-card: 0 25px 45px -12px rgba(0, 0, 0, 0.62), 0 1px 2px rgba(255, 255, 255, 0.05);
+      --radius-card: 28px;
+      --radius-panel: 18px;
+      --radius-pill: 999px;
+      --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink-primary);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(156, 184, 255, 0.18), transparent 28rem),
+        radial-gradient(circle at 82% 22%, rgba(199, 154, 75, 0.18), transparent 26rem),
+        radial-gradient(circle at 50% 88%, rgba(208, 107, 53, 0.14), transparent 28rem),
+        linear-gradient(180deg, #030407 0%, var(--bg-void) 38%, #09070a 100%);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1px 1px at 12% 22%, rgba(255, 245, 220, 0.95), transparent),
+        radial-gradient(1px 1px at 28% 74%, rgba(255, 245, 220, 0.55), transparent),
+        radial-gradient(2px 2px at 42% 18%, rgba(156, 184, 255, 0.75), transparent),
+        radial-gradient(1px 1px at 62% 42%, rgba(255, 245, 220, 0.65), transparent),
+        radial-gradient(1px 1px at 78% 68%, rgba(255, 224, 163, 0.75), transparent),
+        radial-gradient(2px 2px at 92% 31%, rgba(255, 245, 220, 0.6), transparent);
+      background-size: 330px 330px, 280px 280px, 410px 410px, 360px 360px, 300px 300px, 390px 390px;
+      opacity: 0.92;
+      animation: starDrift 42s linear infinite, starPulse 9s ease-in-out infinite alternate;
+      z-index: 0;
+      mix-blend-mode: screen;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(150, 175, 220, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(150, 175, 220, 0.035) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 50% 20%, black, transparent 72%);
+      opacity: 0.72;
+      animation: gridDrift 28s linear infinite;
+      z-index: 0;
+    }
+
+    .site-header, main, .footer { position: relative; z-index: 1; }
+
+    @keyframes starDrift {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-96px, 72px, 0); }
+    }
+    @keyframes starPulse {
+      from { opacity: 0.55; filter: saturate(0.9); }
+      to { opacity: 0.95; filter: saturate(1.25); }
+    }
+    @keyframes gridDrift {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 72px 72px, 72px 72px; }
+    }
+    @keyframes scanline {
+      from { transform: translateX(-120%) skewX(-16deg); opacity: 0; }
+      22% { opacity: 0.48; }
+      to { transform: translateX(220%) skewX(-16deg); opacity: 0; }
+    }
+    @keyframes convoyLine {
+      from { background-position: -260px 0; }
+      to { background-position: 260px 0; }
+    }
+    @keyframes cardRise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      body::before { animation: none; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+
+    a { color: inherit; }
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: -4rem;
+      z-index: 20;
+      background: var(--accent-brass);
+      color: #140f08;
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+    .skip-link:focus { top: 1rem; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(5, 7, 11, 0.72);
+      border-bottom: 1px solid var(--line-cold);
+    }
+    .nav {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+      min-width: 190px;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(199, 154, 75, 0.86), transparent 36%),
+        linear-gradient(135deg, rgba(156, 184, 255, 0.28), rgba(208, 107, 53, 0.2));
+      border: 1px solid var(--line-soft);
+      box-shadow: 0 0 30px rgba(199, 154, 75, 0.16);
+      font-size: 1.1rem;
+    }
+    .brand strong {
+      display: block;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+    }
+    .brand span:last-child {
+      display: block;
+      color: var(--ink-muted);
+      font-size: 0.76rem;
+      margin-top: 0.1rem;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink-secondary);
+      padding: 0.64rem 0.82rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      border: 1px solid transparent;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+    .nav-links a:hover, .nav-links a:focus-visible {
+      color: var(--ink-primary);
+      background: rgba(255, 255, 255, 0.045);
+      border-color: var(--line-soft);
+      outline: none;
+    }
+
+    main { overflow: hidden; }
+    section { scroll-margin-top: 92px; }
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 72px);
+      display: grid;
+      align-items: center;
+      padding: clamp(4rem, 9vw, 8rem) 0;
+    }
+    .hero .wrap {
+      width: min(1880px, calc(100% - 96px));
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(460px, 0.64fr) minmax(0, 1.36fr);
+      gap: clamp(2rem, 4vw, 5.5rem);
+      align-items: center;
+    }
+    .kicker, .overline {
+      color: var(--accent-brass);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      font-size: clamp(3.4rem, 8vw, 7.4rem);
+      line-height: 0.88;
+      letter-spacing: -0.075em;
+      margin: 1rem 0 1.35rem;
+      text-wrap: balance;
+    }
+    .hero-copy {
+      max-width: 650px;
+      color: var(--ink-secondary);
+      font-size: clamp(1.08rem, 1.6vw, 1.35rem);
+      line-height: 1.55;
+    }
+    .hero-copy strong { color: var(--ink-primary); }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1.6rem;
+    }
+    .button {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.82rem 1.05rem;
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      font-weight: 800;
+      border: 1px solid var(--line-soft);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .button:hover, .button:focus-visible { transform: translateY(-2px); outline: none; }
+    .button.primary {
+      background: linear-gradient(135deg, var(--accent-brass), #e0b65d);
+      color: #160f06;
+      border-color: rgba(255, 225, 160, 0.68);
+      box-shadow: 0 14px 34px rgba(199, 154, 75, 0.18);
+    }
+    .button.ghost {
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--ink-primary);
+    }
+
+    .hero-panel {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+      border-radius: 40px;
+      border: 1px solid var(--line-soft);
+      background:
+        radial-gradient(circle at 50% 36%, rgba(199, 154, 75, 0.26), transparent 11rem),
+        linear-gradient(180deg, rgba(5, 7, 11, 0.04), rgba(5, 7, 11, 0.72)),
+        url('assets/images/karakorum-drift.webp') center / cover no-repeat;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      transition: transform 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+    }
+    .hero-panel:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: rgba(255, 225, 160, 0.42);
+      box-shadow: 0 34px 70px -18px rgba(0, 0, 0, 0.78), 0 0 80px rgba(199, 154, 75, 0.12);
+    }
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 8%;
+      border-radius: 50%;
+      border: 1px solid rgba(199, 154, 75, 0.25);
+      box-shadow: 0 0 0 42px rgba(156, 184, 255, 0.025), 0 0 0 84px rgba(199, 154, 75, 0.025), inset 0 0 70px rgba(156, 184, 255, 0.08);
+      transition: transform 300ms ease, opacity 300ms ease;
+    }
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      inset: -20% auto -20% -35%;
+      width: 32%;
+      background: linear-gradient(90deg, transparent, rgba(255, 236, 190, 0.16), transparent);
+      transform: skewX(-16deg);
+      animation: scanline 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-panel:hover::before { transform: scale(1.045); opacity: 0.9; }
+    .ship-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(242, 238, 230, 0.2), rgba(242, 238, 230, 0.92), rgba(156, 184, 255, 0.4), transparent);
+      background-size: 260px 100%;
+      transform: rotate(-18deg);
+      border-radius: 999px;
+      opacity: 0.85;
+      animation: convoyLine 6s linear infinite;
+    }
+    .ship-line:nth-child(1) { width: 46%; left: 14%; top: 28%; }
+    .ship-line:nth-child(2) { width: 34%; right: 10%; top: 42%; opacity: 0.55; }
+    .ship-line:nth-child(3) { width: 28%; left: 24%; bottom: 26%; opacity: 0.42; }
+    .briefing-card {
+      position: absolute;
+      left: 1.2rem;
+      right: 1.2rem;
+      bottom: 1.2rem;
+      padding: 1.15rem;
+      border-radius: 24px;
+      border: 1px solid var(--line-cold);
+      background: rgba(5, 7, 11, 0.72);
+      backdrop-filter: blur(14px);
+    }
+    .briefing-card dl {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin: 0;
+    }
+    .briefing-card dt {
+      color: var(--ink-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.32rem;
+    }
+    .briefing-card dd {
+      margin: 0;
+      color: var(--ink-primary);
+      font-weight: 800;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(280px, 0.55fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 1.5rem;
+      padding-top: clamp(4rem, 8vw, 7rem);
+    }
+    h2 {
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin: 0.45rem 0 0;
+      text-wrap: balance;
+    }
+    .section-head p {
+      color: var(--ink-secondary);
+      line-height: 1.65;
+      margin: 0;
+    }
+    .section-head > div:only-child { grid-column: 1 / -1; }
+
+    .promise-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    .promise-card, .conflict-card, .media-card, .download-card {
+      border: 1px solid var(--line-soft);
+      background: var(--bg-panel-soft);
+      border-radius: var(--radius-panel);
+      padding: 1.1rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+      transition: transform 190ms ease, border-color 190ms ease, background 190ms ease, box-shadow 190ms ease;
+    }
+    .promise-card:hover, .conflict-card:hover, .media-card:hover, .download-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 225, 160, 0.38);
+      background: rgba(24, 32, 48, 0.78);
+      box-shadow: 0 22px 44px rgba(0, 0, 0, 0.35), 0 0 42px rgba(199, 154, 75, 0.06);
+    }
+    .promise-card strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.52rem;
+    }
+    .promise-card p, .conflict-card p, .media-card p, .download-card p {
+      color: var(--ink-secondary);
+      line-height: 1.55;
+      margin: 0;
+      font-size: 0.94rem;
+    }
+
+    .conflict-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    .poster-feature {
+      margin-top: 1rem;
+      border: 1px solid var(--line-soft);
+      border-radius: 32px;
+      min-height: 680px;
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(circle at 74% 20%, rgba(199, 154, 75, 0.18), transparent 18rem),
+        linear-gradient(135deg, rgba(5, 7, 11, 0.95) 0%, rgba(5, 7, 11, 0.68) 52%, rgba(12, 18, 28, 0.52) 100%);
+      box-shadow: var(--shadow-card);
+      display: grid;
+      grid-template-columns: minmax(260px, 0.72fr) minmax(320px, 1fr);
+      gap: clamp(1rem, 3vw, 2rem);
+      align-items: stretch;
+      padding: clamp(1rem, 2.5vw, 1.4rem);
+      transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+    }
+    .poster-feature:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 225, 160, 0.4);
+      box-shadow: 0 34px 74px -18px rgba(0, 0, 0, 0.72), 0 0 70px rgba(199, 154, 75, 0.1);
+    }
+    .poster-copy {
+      align-self: center;
+      max-width: 620px;
+      padding: clamp(1.2rem, 3vw, 2.8rem);
+      z-index: 1;
+    }
+    .poster-copy .overline { margin-bottom: 0.9rem; }
+    .poster-copy h3 {
+      font-size: clamp(2.3rem, 4.2vw, 4.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.065em;
+      max-width: 560px;
+      margin-bottom: 1rem;
+    }
+    .poster-feature p { color: var(--ink-secondary); line-height: 1.6; }
+    .poster-image-shell {
+      position: relative;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 225, 160, 0.2);
+      background: rgba(255, 255, 255, 0.035);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      min-height: 640px;
+    }
+    .poster-image-shell::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background: url('assets/images/poster-space-mongols.webp') center / cover no-repeat;
+      filter: blur(28px) saturate(1.12);
+      opacity: 0.28;
+      transform: scale(1.08);
+    }
+    .poster-image-shell img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      max-height: 780px;
+      object-fit: contain;
+      display: block;
+      transition: transform 260ms ease, filter 260ms ease;
+    }
+    .poster-feature:hover .poster-image-shell img { transform: scale(1.018); filter: saturate(1.08) contrast(1.04); }
+    .conflict-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+    .conflict-card .number {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: #120e07;
+      background: var(--accent-brass);
+      font-family: var(--font-mono);
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .pov-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .pov-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(199, 154, 75, 0.14), transparent 16rem),
+        var(--bg-panel-soft);
+      border-radius: var(--radius-card);
+      padding: 0;
+      min-height: 260px;
+      box-shadow: var(--shadow-card);
+      transition: transform 190ms ease, border-color 190ms ease, background 190ms ease, box-shadow 190ms ease;
+    }
+    .pov-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 225, 160, 0.38);
+      box-shadow: 0 28px 56px -18px rgba(0, 0, 0, 0.72), 0 0 52px rgba(199, 154, 75, 0.08);
+    }
+    .pov-media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(0, 0, 0, 0.28);
+    }
+    .pov-media::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(255, 225, 160, 0.18);
+      border-radius: 18px;
+      pointer-events: none;
+      transition: inset 190ms ease, border-color 190ms ease;
+    }
+    .pov-card:hover .pov-media::after { inset: 9px; border-color: rgba(255, 225, 160, 0.36); }
+    .pov-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.06) contrast(1.04);
+      transition: transform 220ms ease, filter 220ms ease;
+    }
+    .pov-card:hover .pov-media img { transform: scale(1.025); filter: saturate(1.13) contrast(1.07); }
+    .pov-body { padding: clamp(1.2rem, 3vw, 2rem); }
+    .pov-card h3 {
+      font-size: clamp(1.7rem, 3vw, 3rem);
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+      margin-bottom: 0.85rem;
+    }
+    .pov-card p {
+      color: var(--ink-secondary);
+      line-height: 1.62;
+      margin: 0 0 1rem;
+    }
+    .pov-card strong { color: var(--ink-primary); }
+    .pov-note {
+      color: var(--accent-brass);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin: 1rem 0 1.25rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search {
+      flex: 1 1 260px;
+      min-height: 46px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line-cold);
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--ink-primary);
+      padding: 0 1rem;
+      font: inherit;
+    }
+    .search::placeholder { color: var(--ink-muted); }
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .filter-btn {
+      min-height: 42px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line-cold);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--ink-secondary);
+      padding: 0 0.85rem;
+      font: inherit;
+      cursor: pointer;
+    }
+    .filter-btn.active {
+      color: #120e07;
+      background: var(--accent-brass);
+      border-color: transparent;
+      font-weight: 850;
+    }
+
+    .character-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+      gap: 1.05rem;
+    }
+    .character-card {
+      min-height: 100%;
+      border: 1px solid var(--line-soft);
+      background: var(--bg-panel);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      transition: transform 210ms ease, border-color 210ms ease, box-shadow 210ms ease, background 210ms ease;
+      animation: cardRise 420ms ease both;
+    }
+    .character-card:hover, .character-card:focus-within {
+      transform: translateY(-8px);
+      border-color: rgba(255, 225, 160, 0.45);
+      background: rgba(16, 24, 36, 0.94);
+      box-shadow: 0 32px 64px -18px rgba(0, 0, 0, 0.78), 0 0 58px rgba(199, 154, 75, 0.12);
+    }
+    .card-art {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      min-height: 360px;
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255, 230, 175, 0.25), transparent 5rem),
+        radial-gradient(circle at 72% 44%, rgba(156, 184, 255, 0.18), transparent 6rem),
+        linear-gradient(135deg, rgba(199, 154, 75, 0.22), rgba(20, 28, 43, 0.9));
+      border-bottom: 1px solid var(--line-soft);
+      overflow: hidden;
+    }
+    .card-art.has-image {
+      background:
+        linear-gradient(180deg, rgba(5, 7, 11, 0.06), rgba(5, 7, 11, 0.54)),
+        var(--art) center / cover no-repeat,
+        linear-gradient(135deg, rgba(199, 154, 75, 0.22), rgba(20, 28, 43, 0.9));
+    }
+    .card-art.has-image::after {
+      content: "";
+      position: absolute;
+      inset: -18%;
+      background: var(--art) center / cover no-repeat;
+      filter: blur(24px) saturate(1.08);
+      opacity: 0.28;
+      transform: scale(1.1);
+      z-index: 0;
+    }
+    .card-art::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(255, 225, 160, 0.18);
+      border-radius: 22px;
+      background:
+        linear-gradient(120deg, transparent 0 44%, rgba(255, 255, 255, 0.07) 45% 47%, transparent 48%),
+        radial-gradient(circle at 50% 120%, rgba(0, 0, 0, 0.28), transparent 48%);
+      z-index: 3;
+      pointer-events: none;
+      transition: inset 210ms ease, border-color 210ms ease, opacity 210ms ease;
+    }
+    .character-card:hover .card-art::before { inset: 10px; border-color: rgba(255, 225, 160, 0.38); opacity: 0.92; }
+    .card-art img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      filter: saturate(1.06) contrast(1.04);
+      transition: transform 220ms ease, filter 220ms ease;
+    }
+    .character-card:hover .card-art img { transform: scale(1.028); filter: saturate(1.14) contrast(1.07); }
+    .card-art::after {
+      content: attr(data-initial);
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 5.8rem;
+      font-weight: 900;
+      letter-spacing: -0.12em;
+      color: rgba(242, 238, 230, 0.82);
+      text-shadow: 0 16px 50px rgba(0, 0, 0, 0.65);
+    }
+    .card-art.pending::after { content: "?"; }
+    .card-body {
+      padding: 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+    .meta-row {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0.24rem 0.55rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line-cold);
+      color: var(--ink-secondary);
+      font-size: 0.74rem;
+      font-weight: 750;
+    }
+    .pill.primary { color: #140f08; background: var(--accent-brass); border-color: transparent; }
+    .pill.jade { color: #06120b; background: var(--accent-jade); border-color: transparent; }
+    .pill.blood { color: #fff2ee; background: var(--danger-blood); border-color: transparent; }
+    .character-card h3 {
+      font-size: 1.45rem;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+    .role { color: var(--accent-brass); font-weight: 800; margin: -0.42rem 0 0; }
+    .hook, .anchor, .scenario {
+      color: var(--ink-secondary);
+      line-height: 1.55;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .anchor {
+      color: var(--ink-primary);
+      border-left: 2px solid var(--accent-brass);
+      padding-left: 0.75rem;
+    }
+    .card-footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      padding-top: 0.25rem;
+    }
+    .small-link {
+      color: var(--accent-star);
+      text-decoration: none;
+      font-weight: 800;
+      border-bottom: 1px solid rgba(156, 184, 255, 0.3);
+    }
+    .source-note {
+      color: var(--ink-muted);
+      font-size: 0.78rem;
+    }
+
+    .armada-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    .armada-item {
+      border: 1px solid var(--line-cold);
+      border-radius: var(--radius-panel);
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.035);
+    }
+    .armada-item strong { display: block; margin-bottom: 0.42rem; }
+    .armada-item span { color: var(--ink-secondary); line-height: 1.5; font-size: 0.92rem; }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1rem;
+    }
+    .media-card.large {
+      min-height: 300px;
+      display: grid;
+      align-content: end;
+      background:
+        linear-gradient(180deg, transparent, rgba(5, 7, 11, 0.82)),
+        url('assets/images/poster-space-mongols.webp') center 20% / cover no-repeat,
+        var(--bg-panel-soft);
+    }
+    .media-card.kublai {
+      min-height: 300px;
+      display: grid;
+      align-content: end;
+      background:
+        linear-gradient(180deg, transparent, rgba(5, 7, 11, 0.86)),
+        url('assets/images/kublai-khan.webp') center 18% / cover no-repeat,
+        var(--bg-panel-soft);
+    }
+    .media-inline-art {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 225, 160, 0.18);
+      margin-bottom: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      transition: transform 220ms ease, filter 220ms ease;
+    }
+    .media-card:hover .media-inline-art { transform: scale(1.018); filter: saturate(1.08) contrast(1.04); }
+    .track-list { display: grid; gap: 0.72rem; }
+    .track {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      align-items: center;
+      padding: 0.72rem;
+      border: 1px solid var(--line-cold);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.035);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .track:hover { transform: translateX(4px); border-color: var(--line-soft); background: rgba(255, 255, 255, 0.055); }
+    .track span { color: var(--ink-muted); font-family: var(--font-mono); font-size: 0.76rem; }
+
+    .download-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      margin-bottom: clamp(4rem, 8vw, 7rem);
+    }
+    .download-card h2 { margin-bottom: 0.8rem; }
+
+    .footer {
+      border-top: 1px solid var(--line-cold);
+      padding: 2rem 0;
+      color: var(--ink-muted);
+      background: rgba(0, 0, 0, 0.22);
+    }
+    .footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid, .section-head, .media-grid, .download-card { grid-template-columns: 1fr; }
+      .hero .wrap { width: min(1180px, calc(100% - 32px)); }
+      .hero-panel { min-height: 0; aspect-ratio: 16 / 9; }
+      .promise-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .conflict-grid, .character-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .poster-feature { grid-template-columns: 1fr; min-height: auto; }
+      .poster-image-shell { min-height: 560px; }
+      .pov-grid { grid-template-columns: 1fr; }
+      .armada-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav { align-items: flex-start; flex-direction: column; padding: 0.8rem 0; }
+      .nav-links { justify-content: flex-start; }
+    }
+    @media (max-width: 640px) {
+      .promise-grid, .conflict-grid, .character-grid, .armada-strip { grid-template-columns: 1fr; }
+      .briefing-card dl { grid-template-columns: 1fr; }
+      h1 { font-size: clamp(3rem, 17vw, 4rem); }
+      .nav-links a { padding: 0.55rem 0.62rem; }
+      .hero { min-height: auto; }
+      .card-art { min-height: 420px; }
+      .poster-image-shell { min-height: 470px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="Space Mongols home">
+        <span class="brand-mark" aria-hidden="true">☾</span>
+        <span><strong>Space Mongols</strong><span>Tengri Star Khanate</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="#setting">Setting</a>
+        <a href="#conflicts">Conflicts</a>
+        <a href="#characters">Characters</a>
+        <a href="#armada">Armada</a>
+        <a href="#shagai">Shagai</a>
+        <a href="#download">Download</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="kicker">Tengri Star-Khanate · Karakorum Drift</div>
+          <h1 id="hero-title">Conquer the stars from a moving war-city.</h1>
+          <p class="hero-copy"><strong>Space Mongols</strong> is a shipboard space opera set aboard the Karakorum Drift, a hollowed asteroid palace and warship at the heart of the Tengri Star-Khanate. Half a million people live under clan law while the Great Khan's armada pushes into the Golden Reach. Pick a card and step into the pressure.</p>
+          <div class="button-row">
+            <a class="button primary" href="#characters">Meet the Characters</a>
+            <a class="button ghost" href="#setting">Explore the Drift</a>
+          </div>
+        </div>
+        <aside class="hero-panel" aria-label="Khanate briefing visual">
+          <div class="ship-line"></div>
+          <div class="ship-line"></div>
+          <div class="ship-line"></div>
+          <div class="briefing-card">
+            <dl>
+              <div><dt>Setting</dt><dd>Karakorum Drift</dd></div>
+              <div><dt>Mode</dt><dd>Space opera</dd></div>
+              <div><dt>Release</dt><dd>10 Characters + Storyteller GM</dd></div>
+            </dl>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="setting" class="wrap" aria-labelledby="setting-title">
+      <div class="section-head">
+        <div>
+          <div class="overline">The setting promise</div>
+          <h2 id="setting-title">A whole empire in one warship.</h2>
+        </div>
+      </div>
+      <div class="promise-grid">
+        <article class="promise-card"><strong>Conquest with a pulse</strong><p>The Tengri Star-Khanate claims the galaxy as the Stellar Steppe. Every conquest leaves tribute, prisoners, defectors, debts, songs, and scars behind.</p></article>
+        <article class="promise-card"><strong>Shipboard pressure</strong><p>The Drift holds roughly half a million people inside a vertical deck hierarchy. Rank decides where you sleep, who sees you, and what kind of trouble can reach you.</p></article>
+        <article class="promise-card"><strong>Tengri command culture</strong><p>Clan is family, unit, neighborhood, and religion. Losing it can be worse than death, and every character knows where they stand in the order.</p></article>
+        <article class="promise-card"><strong>Social hubs</strong><p>The Broken Wheel, the Sump, the Horse Decks, and the agri-domes turn empire-scale lore into places where a scene can actually start.</p></article>
+        <article class="promise-card"><strong>Characters made by the world</strong><p>Each character card is a route into the setting: command, faith, music, exile, labor, underworld politics, rivalry, and war.</p></article>
+      </div>
+      <aside class="poster-feature" aria-label="Space Mongols cast poster">
+        <div class="poster-copy">
+          <div class="overline">Cast poster</div>
+          <h3>One war-city. Eleven ways in.</h3>
+          <p>Command decks. Lower-deck markets. Shamans. Defectors. Performers. Horse grooms. Tournament warriors. One storyteller card to run the whole machine.</p>
+        </div>
+        <figure class="poster-image-shell" aria-label="Full Space Mongols cast poster">
+          <img src="assets/images/poster-space-mongols.webp" alt="Space Mongols cast poster with the full roster">
+        </figure>
+      </aside>
+    </section>
+
+    <section id="conflicts" class="wrap" aria-labelledby="conflicts-title">
+      <div class="section-head">
+        <div>
+          <div class="overline">Conflict spine</div>
+          <h2 id="conflicts-title">The war is already moving.</h2>
+        </div>
+      </div>
+      <div class="conflict-grid">
+        <article class="conflict-card"><span class="number">01</span><h3>Khanate against Concordat</h3><p>The Helios Concordat opposes Khanate expansion with drone swarms, treaties, Xal psychic war-priests, and soldiers who know exactly how expendable they are.</p></article>
+        <article class="conflict-card"><span class="number">02</span><h3>Clan law against the lower decks</h3><p>The Sump, the clanless, wolf-kin, Coyoti, tribute-born workers, and sponsored defectors expose the gap between Khanate honor and Khanate reality.</p></article>
+        <article class="conflict-card"><span class="number">03</span><h3>Old fire against clean sky</h3><p>The Mönh Gal burn the war dead where they fall. The Blue Sky priesthood wants order, homeworld devotion, and a cleaner story about what the Khanate is becoming.</p></article>
+      </div>
+    </section>
+
+    <section id="perspectives" class="wrap" aria-labelledby="perspectives-title">
+      <div class="section-head">
+        <div>
+          <div class="overline">Two playable perspectives</div>
+          <h2 id="perspectives-title">Command from the center, survive from the edge.</h2>
+        </div>
+      </div>
+      <div class="pov-grid">
+        <article class="pov-card">
+          <figure class="pov-media">
+            <img src="assets/images/pov/tumen-commander-pov.webp" alt="Tumen Commander POV: Khanate commander at the center of Tengri command culture">
+          </figure>
+          <div class="pov-body">
+            <div class="pov-note">Tumen Commander POV</div>
+            <h3>At the heart of the Khanate.</h3>
+            <p><strong>You are a commander of ten thousand warriors</strong>, already inside Khanate rank, clan politics, war councils, victory feasts, and the burden of command. This route puts you close to Tengri culture as lived by its officers: duty, prestige, tactical authority, and the cost of being watched.</p>
+            <p>Use this POV when you want the Drift from the inside: respected, responsible, powerful, and still trapped by the machinery of honor.</p>
+          </div>
+        </article>
+        <article class="pov-card">
+          <figure class="pov-media">
+            <img src="assets/images/pov/coyoti-underdog-pov.webp" alt="Coyoti Underdog POV: outsider at the fringes of Khanate society">
+          </figure>
+          <div class="pov-body">
+            <div class="pov-note">Coyoti Underdog POV</div>
+            <h3>At the fringes of Khanate society.</h3>
+            <p><strong>You are a Coyoti outsider from Concordat space</strong>, useful enough to be tolerated and visible enough to draw suspicion. This route follows the margins of the Drift: sponsorship, suspicion, tavern stares, lower-deck refuge, and the long grind from survival toward belonging.</p>
+            <p>Use this POV when you want friction, culture shock, underdog pressure, and the question of whether the Khanate can become home.</p>
+          </div>
+        </article>
+      </div>
+      <p class="pov-note" style="margin-top: 1rem;">Both perspectives work for male or female player characters.</p>
+    </section>
+
+    <section id="characters" class="wrap" aria-labelledby="characters-title">
+      <div class="section-head">
+        <div>
+          <div class="overline">Character card teasers</div>
+          <h2 id="characters-title">Choose your door into the Drift.</h2>
+        </div>
+      </div>
+      <div class="filters" aria-label="Character filters">
+        <input id="characterSearch" class="search" type="search" placeholder="Search name, role, tag, or world anchor" aria-label="Search characters">
+        <div class="filter-buttons" role="group" aria-label="Filter characters by type">
+          <button class="filter-btn active" type="button" data-filter="all">All</button>
+          <button class="filter-btn" type="button" data-filter="Khanate">Khanate</button>
+          <button class="filter-btn" type="button" data-filter="Outsider">Outsiders</button>
+          <button class="filter-btn" type="button" data-filter="Concordat">Concordat</button>
+          <button class="filter-btn" type="button" data-filter="Storyteller">Storyteller</button>
+        </div>
+      </div>
+      <div id="characterGrid" class="character-grid" aria-live="polite"></div>
+    </section>
+
+    <section id="armada" class="wrap" aria-labelledby="armada-title">
+      <div class="section-head">
+        <div>
+          <div class="overline">Faction and shipboard texture</div>
+          <h2 id="armada-title">The Drift is the map.</h2>
+        </div>
+      </div>
+      <div class="armada-strip">
+        <div class="armada-item"><strong>The Karakorum Drift</strong><span>Hollowed asteroid palace, mobile court, war capital, and the most powerful ship in the Khanate.</span></div>
+        <div class="armada-item"><strong>The Broken Wheel</strong><span>Deck Fourteen airag house, gossip capital, and the best place to watch rank pretend it is not listening.</span></div>
+        <div class="armada-item"><strong>The Sump</strong><span>Deck Twenty refuge for clanless workers, outsiders, runners, debts, favors, and survival strategies.</span></div>
+        <div class="armada-item"><strong>Kheshig and command</strong><span>The Great Khan's personal guard, elite honor, brutal standards, and the pressure of standing near the throne.</span></div>
+      </div>
+    </section>
+
+
+    <section id="shagai" class="wrap" aria-labelledby="shagai-title">
+      <div class="section-head">
+        <div>
+          <div class="overline">Special goodie</div>
+          <h2 id="shagai-title">Play a game from the Drift.</h2>
+        </div>
+        <p>Shagai is the Drift's common gambling game: quick to learn, political at high stakes, and social enough to start trouble in any tavern.</p>
+      </div>
+      <div class="download-card">
+        <div>
+          <h3>Horse Race of the Karakorum Drift</h3>
+          <p>A self-contained mini-game set around the Horse Race of the Karakorum Drift. Open it separately, throw the bones, and try not to leave with a debt.</p>
+        </div>
+        <a class="button primary" href="assets/shagai/space-shagai.html" target="_blank" rel="noopener">Play Space Shagai</a>
+      </div>
+    </section>
+
+    <section id="download" class="wrap" aria-labelledby="download-title">
+      <div class="download-card">
+        <div>
+          <div class="overline">Release pack</div>
+          <h2 id="download-title">Download the card pack.</h2>
+          <p>The release pack will collect the 10 character cards, the storyteller card, the RC2 lorebook, license, and repo link in one archive. Until the final pass is complete, the GitHub repository is the source of record.</p>
+        </div>
+        <a class="button primary" href="https://github.com/GombaTheGreat/Space-Mongols">GitHub repo</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <span>Space Mongols: Karakorum Drift. Character cards, lorebook, and media for the Tengri Star-Khanate.</span>
+      <span>Built from release-ready cards and the RC2 lorebook.</span>
+    </div>
+  </footer>
+
+  <script>
+    const characters = [
+      {
+        name: "Sarnai",
+        role: "Commander of the Kheshig",
+        group: "Khanate",
+        image: "assets/images/coverart/sarnai.webp",
+        hook: "The Great Khan's personal guard has a new commander, the first non-royal to hold the post in three generations.",
+        anchor: "Sarnai brings the Golden Reach campaign to the front line: Kheshig assaults, costly victories, night watches, casualty tablets, and the rare quiet after conquest.",
+        scenario: "Battlefield command, victory spoils, night watch, casualty reckoning, and the annual Kheshig barbecue in the Khan's Garden.",
+        tags: ["Kheshig", "Command", "Battle"],
+        entry: "Warrior command"
+      },
+      {
+        name: "Tuya",
+        role: "Waitress of the Broken Wheel",
+        group: "Khanate",
+        image: "assets/images/coverart/tuya.webp",
+        hook: "Nine years behind the tray, she knows who skipped a meal, who drank too much, and which rumor will reach the upper decks by morning.",
+        anchor: "Tuya turns the Drift into a place people live in. The Broken Wheel is food, airag, gossip, grief, rank, and one woman trying to care for everyone but herself.",
+        scenario: "First arrival at the tavern, mid-shift breaks, Jargal's empty table, commander's welcome, Deck Seven, and after closing.",
+        tags: ["Broken Wheel", "Airag", "Warmth"],
+        entry: "Mid-deck life"
+      },
+      {
+        name: "Chiri",
+        role: "Coyoti defector under Kheshig sponsorship",
+        group: "Outsider",
+        image: "assets/images/coverart/chiri.webp",
+        hook: "The Xal spent her unit like ammunition. The Khanate gave her a berth, orders, and a question she cannot stop asking: can survival become belonging?",
+        anchor: "Chiri is the outsider route into the Drift: Concordat infantry, Khanate suspicion, training halls, patronage, and the ugly work of earning a place.",
+        scenario: "Maintenance corridor, Deck Sixteen sparring ring, raid fallout, Broken Wheel shagai, training mat, and a private invitation.",
+        tags: ["Coyoti", "Defector", "Training"],
+        entry: "Outsider story"
+      },
+      {
+        name: "Saruul",
+        role: "Clan Takhis groom of the Horse Decks",
+        group: "Khanate",
+        image: "assets/images/coverart/saruul.webp",
+        hook: "She trusts twelve hundred pounds of opinionated cyber-horse more than a room full of people asking where she really belongs.",
+        anchor: "Saruul opens the Horse Decks: warm air, coolant tang, sacred mounts, Takhis secrecy, and a Khanate-born outsider proving herself through relentless competence.",
+        scenario: "Horse Deck arrival, coolant leak, Broken Wheel discomfort, third-watch grooming, inspection chaos, Naadam races, and quiet late-shift intimacy.",
+        tags: ["Horse Decks", "Cyber-horses", "Slice of life"],
+        entry: "Horse Decks"
+      },
+      {
+        name: "Batuhan",
+        role: "Clan Kharash warrior and Naadam competitor",
+        group: "Khanate",
+        image: "assets/images/coverart/batuhan.webp",
+        hook: "His clan carries a skull-shaped shame-mark. He intends to erase it by winning the Ordon Naadam against every clan's best.",
+        anchor: "Batuhan turns Khanate honor into sport, sweat, debt, public failure, and the stubborn hope that one warrior can change the fate of a whole clan.",
+        scenario: "Courier delivery, cheating plot, race victory, loss on the archery lane, wrestling final, the Great Khan's judgment, and defeat after the dream breaks.",
+        tags: ["Naadam", "Kharash", "Honor"],
+        entry: "Tournament arc"
+      },
+      {
+        name: "Naran",
+        role: "Shaman of the Mönh Gal",
+        group: "Khanate",
+        image: "assets/images/coverart/naran.webp",
+        hook: "She burns the war dead where they fall and reads from the bones how each one died.",
+        anchor: "Naran carries the old war-faith into a Khanate being pulled toward cleaner rites. Her scenes move between pyres, spirit walks, heresy, humor, and grief that refuses to stay buried.",
+        scenario: "The wake, spirit walk, heresy confession, knife lesson, commander's reading, archery lesson, and the Khan's fire.",
+        tags: ["Mönh Gal", "Shaman", "Spirit walk"],
+        entry: "Faith and death"
+      },
+      {
+        name: "Yesui",
+        role: "The Voice of the Drift",
+        group: "Khanate",
+        image: "assets/images/coverart/yesui.webp",
+        hook: "The Drift's most celebrated throat singer moves through ceremonies, feasts, gossip, and politics with a performer's smile and a historian's memory.",
+        anchor: "Yesui shows the Khanate away from the battlefield: music, public performance, apprentices, Skyfall celebrations, and the lonely cost of being watched by everyone.",
+        scenario: "Drunk in the commons, Coyoti melody, apprentice challenge, third-watch confession, victory feast, Skyfall high, blocked composing, and the song that missed its mark.",
+        tags: ["Music", "Skyfall", "Performer"],
+        entry: "Culture and song"
+      },
+      {
+        name: "Haru",
+        role: "Keeper of the Sump",
+        group: "Outsider",
+        image: "assets/images/coverart/haru.webp",
+        hook: "She built a place for people clan law does not cover, then insists the place belongs to nobody.",
+        anchor: "Haru makes the lower decks visible: shelter, prices, quiet favors, dirtborn workers, neutrality, and the fragile community that polite Khanate society pretends not to need.",
+        scenario: "Sump threshold, cost of good soil, irrigation memories, found by rumor, and the missing cup that means trouble is close.",
+        tags: ["Sump", "Refuge", "Fox-kin"],
+        entry: "Lower-deck refuge"
+      },
+      {
+        name: "Grimalki",
+        role: "Wolf-kin black market operator",
+        group: "Outsider",
+        image: "assets/images/coverart/grimalki.webp",
+        hook: "He runs the Sump's back rooms like a pack den and knows exactly what has to be done when clan law fails people.",
+        anchor: "Grimalki is the Sump's darker half: runners, leverage, contraband, missing contacts, mutton pie, and a place where outsiders can rule their own lives.",
+        scenario: "First arrival at the Sump, forge district job, late-night market, Vela and the mutton pie, and Kessel going dark.",
+        tags: ["Sump", "Underworld", "Wolf-kin"],
+        entry: "Black market"
+      },
+      {
+        name: "Ixalané",
+        role: "Xal Blood-Priest of the Jade Apex",
+        group: "Concordat",
+        image: "assets/images/coverart/ixalane.webp",
+        hook: "Her mother's name hangs over every order. Half the fleet calls her commission inheritance. She intends to make the accusation useful.",
+        anchor: "Ixalané gives the Helios Concordat a face: Xal ritual war, psychic weapons, blood-primed command temples, capture, pride, and a view from the other side of the Golden Reach campaign.",
+        scenario: "The breach, Sump contract, dying Jade Apex, boarding action, nine days in captivity, and the blood rite.",
+        tags: ["Xal", "Concordat", "Blood-Priest"],
+        entry: "Enemy perspective"
+      },
+      {
+        name: "Storyteller",
+        role: "Gamemaster for the Tengri Star-Khanate",
+        group: "Storyteller",
+        image: "assets/images/coverart/storyteller.webp",
+        hook: "Run the Karakorum Drift as a living world: battles, ceremonies, political crises, festivals, markets, patrols, and NPCs that move with or without you.",
+        anchor: "The storyteller card is the whole setting in motion. Use it to explore the Drift, start campaigns, travel between decks, and let the Khanate's pressures find the player.",
+        scenario: "Start on the Drift three days from the Golden Reach, then choose where to go: upper decks, mid-decks, the Sump, Horse Decks, throne room, tavern, forge, or battlefield.",
+        tags: ["Storyteller", "GM", "World"],
+        entry: "Setting engine"
+      }
+    ];
+
+    const grid = document.querySelector('#characterGrid');
+    const search = document.querySelector('#characterSearch');
+    const buttons = [...document.querySelectorAll('.filter-btn')];
+    let activeFilter = 'all';
+
+    function pillClass(group) {
+      if (group === 'Concordat') return 'pill blood';
+      if (group === 'Outsider') return 'pill jade';
+      if (group === 'Storyteller') return 'pill primary';
+      if (group === 'Pending') return 'pill';
+      return 'pill primary';
+    }
+
+    function renderCharacters() {
+      const query = search.value.trim().toLowerCase();
+      const filtered = characters.filter((character) => {
+        const haystack = [character.name, character.role, character.group, character.entry, character.hook, character.anchor, character.tags.join(' ')].join(' ').toLowerCase();
+        const matchesQuery = !query || haystack.includes(query);
+        const matchesFilter = activeFilter === 'all' || character.group === activeFilter || character.tags.includes(activeFilter);
+        return matchesQuery && matchesFilter;
+      });
+
+      grid.innerHTML = filtered.map((character) => {
+        const hasImage = Boolean(character.image);
+        const tags = character.tags.map(tag => `<span class="pill">${tag}</span>`).join('');
+        const art = hasImage
+          ? `<img src="${character.image}" alt="${character.name} cover art" loading="lazy">`
+          : '';
+        return `
+          <article class="character-card">
+            <div class="card-art ${hasImage ? 'has-image' : 'pending'}" style="--art: url('${character.image}')" data-initial="${character.name.slice(0, 1)}">${art}</div>
+            <div class="card-body">
+              <div class="meta-row"><span class="${pillClass(character.group)}">${character.group}</span><span class="pill">${character.entry}</span></div>
+              <h3>${character.name}</h3>
+              <p class="role">${character.role}</p>
+              <p class="hook">${character.hook}</p>
+              <p class="anchor">${character.anchor}</p>
+              <div class="meta-row">${tags}</div>
+              <div class="card-footer"><span class="source-note">${character.entry}</span><a class="small-link" href="#download">Included in pack</a></div>
+            </div>
+          </article>
+        `;
+      }).join('') || `<p class="hook">No matching characters. The armada ate your search term.</p>`;
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.filter;
+        buttons.forEach(btn => btn.classList.toggle('active', btn === button));
+        renderCharacters();
+      });
+    });
+    search.addEventListener('input', renderCharacters);
+    renderCharacters();
+  </script>
+</body>
+</html>

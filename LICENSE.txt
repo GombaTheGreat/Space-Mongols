@@ -1,0 +1,32 @@
+SPACE MONGOLS CHARACTER CARD LICENSE
+
+Copyright (c) Gomba The Great. All rights reserved.
+
+The Space Mongols character cards, lore materials, creator notes, images, audio, music, archives, and related files are provided for private personal use only unless Gomba The Great gives separate written permission.
+
+This license grants limited permission to people who download the Space Mongols materials. It does not restrict Gomba The Great, the creator and rights holder, from using, modifying, distributing, licensing, selling, or otherwise exploiting the work.
+
+You may:
+
+- Download the Space Mongols materials for your own private personal use.
+- Import and use the character cards in your own private or local chatbot setup.
+- Make private edits, modifications, or variants for your own personal use only.
+
+You may not:
+
+- Redistribute, reupload, mirror, repost, share, publish, or otherwise make the Space Mongols materials available to other people.
+- Upload the cards, lore materials, images, audio, music, archives, or related files to character-sharing sites, bot hubs, repositories, databases, cloud folders, social platforms, or third-party hosting services.
+- Sell, rent, sublicense, bundle, monetize, or commercially exploit the Space Mongols materials in any form.
+- Copy, fork, adapt, remix, convert, or republish the Space Mongols materials as your own work or as part of another public or distributed project.
+- Include the Space Mongols materials in paid products, subscription services, datasets, model training sets, AI training corpora, scraping collections, marketplaces, or commercial projects.
+- Remove, hide, alter, or misrepresent attribution, creator information, license notices, repository links, or source information.
+- Use the Space Mongols name, characters, setting, images, or related materials in a way that implies endorsement, partnership, ownership, or official status without permission.
+
+Private personal use means use by the person who downloaded the materials, in that person's own private environment. It does not include distribution to other people, public posting, archive mirroring, rehosting, commercial use, or uploading the materials to any third-party service.
+
+Any permission not expressly granted by this license is reserved by Gomba The Great.
+
+If you want to use the Space Mongols materials for anything outside private personal use, contact Gomba The Great for permission.
+
+Repository:
+https://github.com/GombaTheGreat/Space-Mongols

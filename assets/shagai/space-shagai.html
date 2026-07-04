@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shagai — Horse Race of the Karakorum Drift</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0b0907;--dark:#100d0a;--stone:#1a1510;--panel:#201a12;
+  --raised:#2a221a;--border:#3d3020;--rim:#5a4530;--muted:#6a5840;
+  --warm:#9a8060;--text:#c8b898;--cream:#e0d0b0;
+  --amber:#c07818;--gold:#d08c1a;--bright:#e8a820;
+  --glow:rgba(232,168,32,.28);
+  --chiri:#d87028;--tuya:#4d90b0;--solongo:#78a870;
+}
+html,body{height:100%;}
+body{
+  background:var(--dark);
+  background-image:radial-gradient(ellipse at 25% 25%,rgba(192,120,24,.05) 0%,transparent 55%),
+                   radial-gradient(ellipse at 75% 75%,rgba(80,50,20,.07) 0%,transparent 55%);
+  color:var(--text);font-family:'EB Garamond',Georgia,serif;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;overflow:hidden;user-select:none;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.03'/%3E%3C/svg%3E");
+}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;}
+.screen.active{display:flex;}
+
+/* ── DIVIDER ── */
+.divider{width:100%;max-width:580px;height:1px;background:linear-gradient(to right,transparent,var(--rim),var(--amber),var(--rim),transparent);margin:10px 0;position:relative;}
+.divider::before{content:'◆';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--amber);background:var(--dark);padding:0 7px;font-size:9px;}
+
+/* ── MENU ── */
+.title-eyebrow{font-size:10px;letter-spacing:7px;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:10px;}
+.title-main{font-family:'Cinzel',serif;font-size:42px;font-weight:700;letter-spacing:10px;color:var(--bright);
+  text-shadow:0 0 50px var(--glow),0 0 100px rgba(232,168,32,.1);line-height:1;text-align:center;margin-bottom:4px;}
+.title-sub{font-size:13px;letter-spacing:6px;color:var(--muted);font-style:italic;text-align:center;margin-bottom:2px;}
+.flavour{font-size:14px;font-style:italic;color:var(--warm);text-align:center;max-width:420px;line-height:1.75;margin:4px 0 16px;}
+.pick-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:5px;color:var(--amber);text-align:center;margin-bottom:10px;text-transform:uppercase;}
+
+.char-grid{display:flex;gap:12px;margin-bottom:14px;}
+.char-card{width:186px;background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:16px 14px;
+  cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s;text-align:center;}
+.char-card:hover{border-color:var(--rim);transform:translateY(-2px);}
+.char-card.selected{border-color:var(--amber);box-shadow:0 0 22px rgba(192,120,24,.2),inset 0 0 40px rgba(192,120,24,.04);}
+.char-card.selected .c-name{color:var(--bright);}
+
+.c-avatar{width:66px;height:66px;margin:0 auto 10px;border-radius:50%;border:2px solid var(--border);overflow:hidden;background:var(--stone);}
+.c-avatar img,.c-avatar svg{width:66px;height:66px;display:block;object-fit:cover;}
+.c-name{font-family:'Cinzel',serif;font-size:16px;font-weight:600;letter-spacing:2px;color:var(--cream);margin-bottom:2px;transition:color .2s;}
+.c-clan{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.c-desc{font-size:12.5px;font-style:italic;color:var(--warm);line-height:1.5;margin-bottom:10px;min-height:52px;}
+.diff-row{display:flex;justify-content:center;gap:5px;}
+.pip{width:7px;height:7px;border-radius:50%;background:var(--raised);border:1px solid var(--border);}
+.pip.on{background:var(--amber);border-color:var(--gold);box-shadow:0 0 5px rgba(192,120,24,.5);}
+
+.avatar-wrap{width:100%;max-width:580px;margin-bottom:14px;}
+.avatar-wrap-lbl{display:none;}
+.avatar-inputs{display:none;}
+
+.btn-primary{font-family:'Cinzel',serif;font-size:11px;letter-spacing:7px;color:var(--bright);
+  background:var(--panel);border:1px solid var(--amber);padding:12px 44px;cursor:pointer;
+  transition:all .2s;border-radius:2px;box-shadow:0 0 20px rgba(192,120,24,.1);}
+.btn-primary:hover:not(:disabled){background:var(--amber);color:var(--dark);box-shadow:0 0 40px rgba(192,120,24,.4);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed;}
+
+/* ── GAME ── */
+#game-screen{/* full-viewport flex container, centering handled by .screen base */}
+.game-inner{width:100%;max-width:820px;display:flex;flex-direction:column;gap:7px;align-items:stretch;}
+.g-top{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.combatant{display:flex;align-items:center;gap:9px;min-width:155px;}
+.combatant.right{flex-direction:row-reverse;text-align:right;}
+.comb-avatar{width:42px;height:42px;border-radius:50%;border:2px solid var(--border);overflow:hidden;background:var(--stone);flex-shrink:0;}
+.comb-avatar img,.comb-avatar svg{width:42px;height:42px;display:block;object-fit:cover;}
+.comb-name{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--cream);font-weight:600;}
+.comb-sub{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:1px;}
+.comb-pos{font-size:11px;color:var(--amber);margin-top:2px;}
+.turn-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;color:var(--amber);
+  border:1px solid var(--border);background:var(--panel);padding:5px 14px;border-radius:2px;text-align:center;
+  transition:border-color .3s,color .3s,box-shadow .3s;}
+.turn-badge.lit{border-color:var(--amber);color:var(--bright);box-shadow:0 0 12px rgba(192,120,24,.25);}
+
+.wind-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;
+  border:1px solid var(--border);background:var(--panel);padding:5px 12px;border-radius:2px;
+  text-align:center;display:flex;align-items:center;gap:7px;white-space:nowrap;
+  transition:border-color .3s, color .3s, box-shadow .3s;}
+.wind-badge.drift{border-color:#c04020;color:#e06030;box-shadow:0 0 14px rgba(200,60,20,.3);
+  animation:driftPulse 0.6s ease-in-out infinite alternate;}
+@keyframes driftPulse{from{box-shadow:0 0 8px rgba(200,60,20,.2)} to{box-shadow:0 0 20px rgba(200,60,20,.5)}}
+
+.track-outer{width:100%;background:var(--stone);border:1px solid var(--border);border-radius:3px;padding:9px 11px;}
+.track-lbl-row{display:flex;justify-content:space-between;margin-bottom:5px;}
+.track-lbl{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+.track-rail{position:relative;height:58px;}
+.track-spaces{display:flex;gap:2px;height:18px;margin-top:20px;}
+.ts{flex:1;height:18px;background:var(--raised);border:1px solid var(--border);border-radius:1px;
+  font-size:7px;display:flex;align-items:center;justify-content:center;color:var(--border);}
+.ts.finish-ts{background:rgba(192,120,24,.15);border-color:var(--amber);font-size:11px;color:var(--amber);}
+.horse-token{position:absolute;width:22px;height:22px;border-radius:50%;border:2px solid;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'Cinzel',serif;font-weight:700;
+  transition:left .45s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+#pt{background:var(--stone);border-color:var(--bright);color:var(--bright);box-shadow:0 0 8px rgba(232,168,32,.35);top:0;}
+#ot{background:var(--stone);top:36px;}
+
+.arena-outer{width:100%;background:var(--stone);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+#gc{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none;}
+
+.status-row{width:100%;display:flex;gap:7px;align-items:stretch;min-height:42px;}
+.status-box{flex:1;background:var(--stone);border:1px solid var(--border);border-radius:2px;padding:8px 13px;display:flex;align-items:center;}
+#st{font-size:14px;font-style:italic;color:var(--text);line-height:1.4;}
+.result-box{background:var(--stone);border:1px solid var(--border);border-radius:2px;padding:7px 14px;
+  display:flex;align-items:center;gap:10px;min-width:175px;transition:all .3s;}
+.result-box.hidden{display:none;}
+.r-emoji{font-size:21px;}
+.r-name{font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;font-weight:600;}
+.r-moves{font-size:11px;color:var(--muted);margin-top:1px;}
+.instruct{font-family:'Cinzel',serif;font-size:9px;letter-spacing:5px;color:var(--muted);text-align:center;text-transform:uppercase;}
+
+/* ── RESULT ── */
+.res-badge{font-family:'Cinzel',serif;font-size:10px;letter-spacing:6px;text-transform:uppercase;
+  border:1px solid;padding:5px 18px;border-radius:2px;margin-bottom:10px;}
+.res-badge.win-b{color:var(--bright);border-color:var(--amber);background:rgba(192,120,24,.1);}
+.res-badge.lose-b{color:var(--muted);border-color:var(--muted);}
+.res-title{font-family:'Cinzel',serif;font-size:42px;font-weight:700;letter-spacing:6px;text-align:center;margin-bottom:6px;}
+.res-title.win-t{color:var(--bright);text-shadow:0 0 50px var(--glow);}
+.res-title.lose-t{color:var(--muted);}
+.res-quote{font-size:15px;font-style:italic;color:var(--warm);text-align:center;max-width:420px;line-height:1.75;margin-bottom:20px;}
+.res-stats{display:flex;gap:30px;margin-bottom:26px;}
+.res-stat{text-align:center;}
+.rs-n{font-family:'Cinzel',serif;font-size:38px;font-weight:700;color:var(--bright);line-height:1;}
+.rs-l{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:3px;}
+
+@keyframes tokenPop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+.pop{animation:tokenPop .3s ease-out;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease-out both;}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+.shake{animation:shakeX .25s ease-out;}
+
+.res-record{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:20px;}
+.res-record span{color:var(--warm);}
+.res-btns{display:flex;gap:12px;margin-top:4px;}
+.btn-secondary{font-family:'Cinzel',serif;font-size:10px;letter-spacing:5px;color:var(--muted);
+  background:transparent;border:1px solid var(--border);padding:11px 28px;cursor:pointer;
+  transition:all .2s;border-radius:2px;}
+.btn-secondary:hover{border-color:var(--rim);color:var(--text);}
+
+/* ── RULES OVERLAY ── */
+.rules-btn{position:absolute;top:12px;right:12px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;
+  color:var(--muted);background:transparent;border:1px solid var(--border);padding:4px 10px;cursor:pointer;
+  border-radius:2px;transition:all .2s;z-index:10;}
+.rules-btn:hover{border-color:var(--rim);color:var(--text);}
+.rules-overlay{position:fixed;inset:0;background:rgba(8,6,4,.88);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:20px;}
+.rules-overlay.active{display:flex;}
+.rules-panel{width:100%;max-width:540px;background:var(--panel);border:1px solid var(--border);
+  border-radius:3px;padding:28px 32px;position:relative;}
+.rules-close{position:absolute;top:12px;right:14px;font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:4px;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px;}
+.rules-close:hover{color:var(--text);}
+.rules-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;letter-spacing:6px;
+  color:var(--bright);margin-bottom:16px;text-align:center;}
+.rules-body{font-size:13.5px;line-height:1.85;color:var(--text);}
+.rules-body h3{font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;color:var(--amber);
+  text-transform:uppercase;margin:14px 0 6px;}
+.rules-body .face-row{display:flex;gap:18px;margin:6px 0;flex-wrap:wrap;}
+.rules-body .face-item{display:flex;align-items:center;gap:6px;font-size:13px;}
+.rules-body .face-item span{font-size:18px;}
+</style>
+</head>
+<body>
+
+<!-- ============ MENU ============ -->
+<div id="menu-screen" class="screen active">
+  <div class="title-eyebrow">TENGRI STAR-KHANATE</div>
+  <div class="title-main">SPACE SHAGAI</div>
+  <div class="title-sub">Horse Race of the Karakorum Drift</div>
+  <div class="divider"></div>
+  <div class="flavour">"The bone knows where it wants to go. The hand only decides how hard."</div>
+  <div class="pick-label">Choose your opponent</div>
+  <div class="char-grid" id="char-grid"></div>
+  <button class="btn-primary" id="start-btn" disabled>RIDE</button>
+</div>
+
+<!-- ============ GAME ============ -->
+<div id="game-screen" class="screen">
+<button class="rules-btn" id="rules-btn">RULES</button>
+<div class="game-inner">
+  <div class="g-top">
+    <div class="combatant" id="player-block">
+      <div class="comb-avatar" id="p-avatar-wrap"></div>
+      <div>
+        <div class="comb-name">You</div>
+        <div class="comb-sub">Challenger</div>
+        <div class="comb-pos" id="p-pos-txt">Space 0</div>
+      </div>
+    </div>
+    <div class="turn-badge" id="turn-badge">YOUR TURN</div>
+    <div class="wind-badge" id="wind-badge" style="display:none"></div>
+    <div class="combatant right" id="opp-block">
+      <div class="comb-avatar" id="o-avatar-wrap"></div>
+      <div>
+        <div class="comb-name" id="o-name-txt">—</div>
+        <div class="comb-sub" id="o-clan-txt">—</div>
+        <div class="comb-pos" id="o-pos-txt">Space 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="track-outer">
+    <div class="track-lbl-row">
+      <span class="track-lbl">You ▲</span>
+      <span class="track-lbl" id="track-finish-lbl">First to Space 16 wins</span>
+      <span class="track-lbl" id="o-name-track">Opponent ▼</span>
+    </div>
+    <div class="track-rail">
+      <div class="horse-token" id="pt">▲</div>
+      <div class="horse-token" id="ot">▼</div>
+      <div class="track-spaces" id="track-spaces"></div>
+    </div>
+  </div>
+
+  <div class="arena-outer">
+    <canvas id="gc" width="736" height="260"></canvas>
+  </div>
+
+  <div class="status-row">
+    <div class="status-box"><div id="st">Waiting...</div></div>
+    <div class="result-box hidden" id="result-box">
+      <span class="r-emoji" id="r-emoji">🐎</span>
+      <div><div class="r-name" id="r-name">HORSE</div><div class="r-moves" id="r-moves">+4 spaces</div></div>
+    </div>
+  </div>
+  <div class="instruct" id="instruct">CLICK AND DRAG THE BONE — PULL BACK TO AIM — RELEASE TO FLICK</div>
+</div>
+</div>
+
+<!-- ============ RULES ============ -->
+<div class="rules-overlay" id="rules-overlay">
+  <div class="rules-panel">
+    <button class="rules-close" id="rules-close">✕ CLOSE</button>
+    <div class="rules-title">SHAGAI</div>
+    <div class="rules-body">
+      <h3>The Game</h3>
+      First player to reach Space 16 on the track wins. Players alternate turns — you throw, then your opponent throws.
+      <h3>How to Throw</h3>
+      Click and drag the bone <em>backward</em> from its resting spot. The further you pull, the harder the throw. Release to flick. A trajectory ghost shows your projected path before you let go.
+      <h3>The Faces</h3>
+      <div class="face-row">
+        <div class="face-item"><span>🐎</span> <strong>HORSE</strong> — +4 spaces</div>
+        <div class="face-item"><span>🐪</span> <strong>CAMEL</strong> — +2 spaces</div>
+        <div class="face-item"><span>🐑</span> <strong>SHEEP</strong> — +1 space</div>
+        <div class="face-item"><span>🐐</span> <strong>GOAT</strong> — no move</div>
+        <div class="face-item"><span>⚡</span> <strong>WALL</strong> — no move</div>
+      </div>
+      <h3>Streak Bonus</h3>
+      Land <strong>HORSE</strong> on consecutive turns and earn +1 bonus space from the second horse onward. Any other face resets your streak.
+      <h3>The Field</h3>
+      Every thrown bone stays on the lane permanently. Resting bones have collision — your bone will deflect off them. The field grows more cluttered as the game progresses.
+      <h3>Wind &amp; Thrusters</h3>
+      A wind indicator appears before each throw. The bone drifts in that direction mid-flight. Occasionally the Drift fires its positioning thrusters — a strong wind spike that affects both players equally.
+      <h3>Opponents</h3>
+      <strong>Tuya</strong> aims short and safe — one pip difficulty. <strong>Chiri</strong> is unpredictable — two pips. <strong>Solongo</strong> is precise and unforgiving — three pips.
+    </div>
+  </div>
+</div>
+<div id="result-screen" class="screen">
+  <div class="res-badge" id="res-badge">VICTORY</div>
+  <div class="res-title" id="res-title">YOUR HORSE WINS</div>
+  <div class="divider"></div>
+  <div class="res-quote" id="res-quote"></div>
+  <div class="res-record" id="res-record">Record vs <span id="rec-name">—</span>: <span id="rec-wl">0 – 0</span></div>
+  <div class="res-stats">
+    <div class="res-stat"><div class="rs-n" id="rs-turns">0</div><div class="rs-l">Turns Played</div></div>
+    <div class="res-stat"><div class="rs-n" id="rs-horse">0</div><div class="rs-l">Horse Faces</div></div>
+    <div class="res-stat"><div class="rs-n" id="rs-camel">0</div><div class="rs-l">Camel Faces</div></div>
+    <div class="res-stat"><div class="rs-n" id="rs-goat">0</div><div class="rs-l">Goat Faces</div></div>
+    <div class="res-stat"><div class="rs-n" id="rs-streak">0</div><div class="rs-l">Best Streak</div></div>
+  </div>
+  <div class="res-btns">
+    <button class="btn-primary" id="rematch-btn">REMATCH</button>
+    <button class="btn-secondary" id="replay-btn">CHANGE OPPONENT</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CHARACTERS
+// ============================================================
+const CHARS = {
+  chiri: {
+    id:'chiri', name:'Chiri', clan:'Coyoti Defector', color:'#d87028', diff:2,
+    desc:'Reads the bone like she reads a room. Quick instincts, unpredictable throws.',
+    avatarUrl:'Shagai-Chiri150px.png',
+    targetX:576, variance:105,
+    aiLines:['Her ears flatten as she sizes up the lane.','A flick of the wrist. Almost too casual.','She tilts her head and throws without looking.','The bone clacks off her fingertip.'],
+    winText:'"Told you I was good at this." Her tail flicks once, satisfied.',
+    loseText:'"Next time," Chiri says, ears low. "I let you win next time."',
+    reactLines:{
+      selfHorse: ['"Hah." Her tail lifts.', '"There it is." Ears up.', 'She snaps her fingers once.'],
+      selfGoat:  ['"Tch." Her ear twitches.', 'She exhales through her nose.', '"That one didn\'t count."'],
+      selfWall:  ['"Too hard. Got ahead of myself."', '"Oof." She shakes out her wrist.', '"The wall says no."'],
+      yourHorse: ['"Lucky."', 'She watches your horse move with narrow eyes.', '"Don\'t get used to that."'],
+      yourStreak:['Her ears go flat. She\'s paying attention now.', '"Two in a row. Fine."', '"Lucky twice. We\'ll see about three."'],
+    },
+  },
+  tuya: {
+    id:'tuya', name:'Tuya', clan:'Deck Fourteen', color:'#4d90b0', diff:1,
+    desc:'Off-shift from the Broken Wheel. Plays to forget the rest of it.',
+    avatarUrl:'Shagai-Tuya150px.png',
+    targetX:430, variance:85,
+    aiLines:['She wipes her hands on her apron and takes a breath.','Her throw is careful. Slightly short.','She mutters something under her breath.','Lucky bones, she says. Then throws.'],
+    winText:'"I never win at this. I never—" She covers her mouth with both hands.',
+    loseText:'"You played well." She means it. She is already refilling the airag.',
+    reactLines:{
+      selfHorse: ['"Oh." She blinks at the lane. "Oh, that worked."', '"Is that — yes. That\'s a horse."', '"Okay. Okay, good."'],
+      selfGoat:  ['"There it is." She sighs. "There it always is."', 'She taps the table twice.', '"Of course."'],
+      selfWall:  ['"Ah. Too hard." She winces slightly.', '"The wall. Right."', '"I always do that."'],
+      yourHorse: ['"Good throw." She means it.', '"Nice."', '"That was clean. Well done."'],
+      yourStreak:['She straightens up. This just got serious.', '"Two in a row. You\'re better at this than you look."', '"Okay. I have to actually try now."'],
+    },
+  },
+  solongo: {
+    id:'solongo', name:'Solongo', clan:'Naadam Circuit', color:'#78a870', diff:3,
+    desc:"Three cycles undefeated. She does not tell you this. She doesn't need to.",
+    avatarUrl:'Shagai-Solongo150px.png',
+    targetX:579, variance:32,
+    aiLines:['She studies the lane for exactly two seconds.','Crisp, unhurried. The bone lands where she intended.','She rolls her neck. Then throws. Textbook.','No ceremony. Just results.'],
+    winText:'Solongo nods once. "Good game." She is already setting up again.',
+    loseText:'She stares at the track for a long moment. "...Hm."',
+    reactLines:{
+      selfHorse: ['The bone lands exactly where she looked.', 'She doesn\'t react. The result speaks.', 'A single nod. Four spaces.'],
+      selfGoat:  ['A fractional pause. Then she picks up the next bone.', 'She files it away. Notes it.', '"Off-line." Said to no one.'],
+      selfWall:  ['Her jaw tightens. Barely.', 'She looks at the lane for two full seconds.', '"Overcorrected."'],
+      yourHorse: ['She watches your horse move up the track without expression.', '"Good."', 'She recalculates. Silently.'],
+      yourStreak:['Her eyes move to the track. Then back to the lane.', '"Twice." A long pause. "Interesting."', 'She adjusts her stance almost imperceptibly.'],
+    },
+  }
+};
+
+// ============================================================
+// ZONE CONSTANTS (pixels across canvas width 736)
+// ============================================================
+const CW = 736, CH = 260;   // taller — more vertical drag room
+const ZONE_GOAT_END   = 188;  // 0-188 = goat
+const ZONE_SHEEP_END  = 370;  // 188-370 = sheep
+const ZONE_CAMEL_END  = 545;  // 370-545 = camel
+const ZONE_HORSE_END  = 613;  // 545-613 = HORSE (68px)
+// 613-736 = wall (123px)
+const BONE_START_X = 158, BONE_START_Y = 130;  // further right + centred vertically
+const TRACK_LEN = 16;
+const FRICTION = 0.971;           // was 0.974 — bones travel farther
+const SPACE_SUM = 1 / (1 - FRICTION);
+
+function rollWind(){
+  // Small wind, weighted toward calm — max ±0.038
+  throwWind = (Math.random()*2-1) * 0.038 * Math.pow(Math.random(), 0.6);
+}
+const FACES = {
+  horse: {name:'HORSE', emoji:'🐎', moves:4, color:'#c09020'},
+  camel: {name:'CAMEL', emoji:'🐪', moves:2, color:'#907030'},
+  sheep: {name:'SHEEP', emoji:'🐑', moves:1, color:'#4a7090'},
+  goat:  {name:'GOAT',  emoji:'🐐', moves:0, color:'#6a4030'},
+};
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let gState = 'MENU';
+let selChar = null, selCharObj = null;
+let playerPos = 0, oppPos = 0;
+let playerTurn = true;
+let turnCount = 0;
+let faceCounts = {horse:0,camel:0,sheep:0,goat:0};
+let restingBones = [];
+let throwWind = 0;
+let sessionRecord = {chiri:{w:0,l:0}, tuya:{w:0,l:0}, solongo:{w:0,l:0}};
+
+// visual fx state
+let zoneFlash  = null;
+let shakeAmt   = 0;
+let particles  = [];
+let floatTexts = [];   // {x,y,vy,life,maxLife,text,col,size}
+let boneTrail  = [];   // {x,y,angle,alpha} — last N positions of active bone
+
+// streak & drift
+let playerStreak = 0;
+let bestStreak   = 0;
+let driftTimer   = 0;
+let driftActive  = false;
+
+// rules overlay
+let rulesOpen = false;
+
+let bone = {x:BONE_START_X, y:BONE_START_Y, vx:0, vy:0, angle:0, av:0, moving:false, jankPhase:0, spinDir:1, skipTimer:0};
+let wallHit = false;
+let dragActive = false, dragSx=0, dragSy=0, dragCx=0, dragCy=0;
+let rafId = null;
+
+// ============================================================
+// AUDIO
+// ============================================================
+let audioCtx = null;
+let rollOsc = null, rollGain = null; // persistent rolling oscillator
+
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playClack(pitch=600, dur=0.09, vol=0.25){
+  try{
+    const ac=getAudioCtx();
+    // noise burst + tone
+    const buf = ac.createBuffer(1, ac.sampleRate*0.05, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*0.4;
+    const noise=ac.createBufferSource(); noise.buffer=buf;
+    const ng=ac.createGain(); ng.gain.setValueAtTime(vol*0.6, ac.currentTime);
+    ng.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur*0.8);
+    noise.connect(ng); ng.connect(ac.destination); noise.start();
+
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type='triangle';
+    o.connect(g); g.connect(ac.destination);
+    o.frequency.setValueAtTime(pitch, ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(pitch*0.25, ac.currentTime+dur);
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur+0.02);
+    o.start(); o.stop(ac.currentTime+dur+0.04);
+  }catch(e){}
+}
+
+function startRoll(){
+  try{
+    const ac=getAudioCtx(); stopRoll();
+    rollGain = ac.createGain(); rollGain.gain.setValueAtTime(0.0, ac.currentTime);
+    rollOsc  = ac.createOscillator(); rollOsc.type='sawtooth';
+    rollOsc.frequency.setValueAtTime(90, ac.currentTime);
+    const filt = ac.createBiquadFilter(); filt.type='bandpass'; filt.frequency.value=200; filt.Q.value=1.5;
+    rollOsc.connect(filt); filt.connect(rollGain); rollGain.connect(ac.destination);
+    rollOsc.start();
+    rollGain.gain.linearRampToValueAtTime(0.06, ac.currentTime+0.08);
+  }catch(e){}
+}
+function updateRoll(spd){
+  if(!rollGain||!rollOsc) return;
+  try{
+    const ac=getAudioCtx();
+    const targetVol = Math.min(spd*0.012, 0.07);
+    rollGain.gain.setTargetAtTime(targetVol, ac.currentTime, 0.04);
+    rollOsc.frequency.setTargetAtTime(60 + spd*14, ac.currentTime, 0.05);
+  }catch(e){}
+}
+function stopRoll(){
+  try{
+    if(rollGain){ rollGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05); }
+    setTimeout(()=>{ try{ if(rollOsc) rollOsc.stop(); }catch(e){} rollOsc=null; rollGain=null; }, 200);
+  }catch(e){}
+}
+
+function playThud(zone){ // richer landing sound
+  try{
+    const ac=getAudioCtx();
+    const pitch = zone==='horse'?420: zone==='camel'?280: zone==='sheep'?200:140;
+    const vol   = zone==='horse'?0.35: zone==='camel'?0.28: zone==='sheep'?0.22:0.18;
+    // sub thump
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(pitch*1.2, ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(pitch*0.4, ac.currentTime+0.18);
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+0.22);
+    o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+0.25);
+    // surface crackle
+    const buf=ac.createBuffer(1,ac.sampleRate*0.06,ac.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/data.length*8);
+    const ns=ac.createBufferSource(); ns.buffer=buf;
+    const ng=ac.createGain(); ng.gain.value=vol*0.5;
+    ns.connect(ng); ng.connect(ac.destination); ns.start();
+  }catch(e){}
+}
+
+function playChime(){
+  const notes=[660,830,1046,1320];
+  notes.forEach((f,i)=>setTimeout(()=>playClack(f,0.22,0.18), i*70));
+}
+function playStreakChime(){
+  [880,1100,1320,1760].forEach((f,i)=>setTimeout(()=>playClack(f,0.2,0.22), i*55));
+}
+function playFail(){
+  [220,185,150].forEach((f,i)=>setTimeout(()=>playClack(f,0.2,0.22), i*110));
+}
+function playWall(){
+  try{
+    const ac=getAudioCtx();
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type='square'; o.frequency.setValueAtTime(140, ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(40, ac.currentTime+0.3);
+    g.gain.setValueAtTime(0.3, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+0.32);
+    o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+0.35);
+  }catch(e){}
+}
+
+// ============================================================
+// RENDER MENU
+// ============================================================
+function buildMenu(){
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML='';
+  Object.values(CHARS).forEach(ch=>{
+    const card = document.createElement('div');
+    card.className='char-card'; card.dataset.id=ch.id;
+    card.innerHTML=`
+      <div class="c-avatar"><img src="${ch.avatarUrl}" alt="${ch.name}" style="width:66px;height:66px;display:block;object-fit:cover;border-radius:50%;"/></div>
+      <div class="c-name">${ch.name}</div>
+      <div class="c-clan">${ch.clan}</div>
+      <div class="c-desc">${ch.desc}</div>
+      <div class="diff-row">${[1,2,3].map(n=>`<div class="pip${n<=ch.diff?' on':''}"></div>`).join('')}</div>
+    `;
+    card.addEventListener('click',()=>selectChar(ch.id));
+    grid.appendChild(card);
+  });
+}
+
+function selectChar(id){
+  selChar=id; selCharObj=CHARS[id];
+  document.querySelectorAll('.char-card').forEach(c=>{
+    c.classList.toggle('selected', c.dataset.id===id);
+  });
+  document.getElementById('start-btn').disabled=false;
+}
+
+// ============================================================
+// BUILD TRACK
+// ============================================================
+function buildTrack(){
+  const ts = document.getElementById('track-spaces');
+  ts.innerHTML='';
+  for(let i=1;i<=TRACK_LEN;i++){
+    const d=document.createElement('div');
+    d.className='ts'+(i===TRACK_LEN?' finish-ts':'');
+    d.textContent=i===TRACK_LEN?'⛳':'';
+    ts.appendChild(d);
+  }
+  setTokenPositions(0,0);
+}
+
+function getTokenLeft(pos){
+  const ts = document.getElementById('track-spaces');
+  const spaces = ts.querySelectorAll('.ts');
+  if(!spaces.length) return 0;
+  const idx = Math.min(pos, TRACK_LEN) - 1;
+  if(idx<0) return 0;
+  const sp = spaces[Math.min(idx, spaces.length-1)];
+  const rect = sp.getBoundingClientRect();
+  const railRect = document.querySelector('.track-rail').getBoundingClientRect();
+  const center = rect.left - railRect.left + rect.width/2;
+  return center - 11; // half of 22px token
+}
+
+function setTokenPositions(pp, op, animate=false){
+  const pt = document.getElementById('pt');
+  const ot = document.getElementById('ot');
+  if(!pt||!ot) return;
+  // compute left relative to rail
+  const ts = document.getElementById('track-spaces');
+  if(!ts) return;
+  const spaces = ts.querySelectorAll('.ts');
+  const railW = ts.offsetWidth;
+  const spaceW = (railW + 2) / TRACK_LEN;
+
+  function leftForPos(p){
+    if(p<=0) return -11;
+    const idx = Math.min(p-1, TRACK_LEN-1);
+    return idx * spaceW + spaceW/2 - 11;
+  }
+  pt.style.left = leftForPos(pp)+'px';
+  ot.style.left = leftForPos(op)+'px';
+  if(animate){
+    pt.classList.remove('pop'); void pt.offsetWidth; pt.classList.add('pop');
+    ot.classList.remove('pop'); void ot.offsetWidth; ot.classList.add('pop');
+  }
+  document.getElementById('p-pos-txt').textContent=`Space ${pp}`;
+  document.getElementById('o-pos-txt').textContent=`Space ${op}`;
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+function startGame(){
+  if(!selChar) return;
+  playerPos=0; oppPos=0; playerTurn=true; turnCount=0;
+  faceCounts={horse:0,camel:0,sheep:0,goat:0};
+  wallHit=false;
+  restingBones=[];
+  particles=[];
+  floatTexts=[];
+  boneTrail=[];
+  playerStreak=0;
+  bestStreak=0;
+  const wb = document.getElementById('wind-badge');
+  if(wb){ wb.style.display='none'; wb.className='wind-badge'; }
+  driftTimer = 5 + Math.floor(Math.random()*3); // first event in 5-7 turns
+  driftActive=false;  gState='PLAYER_TURN';
+
+  // Set up opponent info
+  const ch = selCharObj;
+  const oc = ch.color;
+  document.getElementById('ot').style.borderColor=oc;
+  document.getElementById('ot').style.color=oc;
+  document.getElementById('o-name-txt').textContent=ch.name;
+  document.getElementById('o-clan-txt').textContent=ch.clan;
+  document.getElementById('o-name-track').textContent=`${ch.name} ▼`;
+
+  // Avatars
+  const pAvWrap = document.getElementById('p-avatar-wrap');
+  const oAvWrap = document.getElementById('o-avatar-wrap');
+  pAvWrap.innerHTML=`<img src="Shagai-user150px.png" alt="You" style="width:42px;height:42px;border-radius:50%;object-fit:cover;display:block;"/>`;
+  oAvWrap.innerHTML=`<img src="${ch.avatarUrl}" alt="${ch.name}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;display:block;"/>`;
+
+  buildTrack();
+  showScreen('game-screen');
+  resetBone();
+  rollWind();   // set wind for first turn before player throws
+  updateWindBadge();
+  setStatus("Pull the bone back and release — aim for the 🐎 HORSE zone.");
+  hideResult();
+  updateTurnBadge();
+  startLoop();
+}
+
+// ============================================================
+// CANVAS LOOP
+// ============================================================
+const canvas = ()=>document.getElementById('gc');
+const ctx = ()=>{ const c=canvas(); return c?c.getContext('2d'):null; };
+
+function startLoop(){
+  if(rafId) cancelAnimationFrame(rafId);
+  loop();
+}
+function loop(){
+  rafId=requestAnimationFrame(loop);
+  const c=ctx(); if(!c) return;
+  if(shakeAmt > 0.2){ shakeAmt *= 0.78; } else { shakeAmt = 0; }
+  if(zoneFlash){ zoneFlash.alpha -= 0.028; if(zoneFlash.alpha<=0) zoneFlash=null; }
+  // update particles
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.18; p.vx*=0.94;
+    p.life--;
+    if(p.life<=0) particles.splice(i,1);
+  }
+  // update float texts
+  for(let i=floatTexts.length-1;i>=0;i--){
+    const f=floatTexts[i];
+    f.y+=f.vy; f.vy*=0.93; f.life--;
+    if(f.life<=0) floatTexts.splice(i,1);
+  }
+  drawAll(c);
+  if(bone.moving){
+    const stopped = updatePhysics();
+    if(stopped) onBoneStopped();
+  }
+}
+
+function drawAll(c){
+  c.clearRect(0,0,CW,CH);
+  const sx = shakeAmt > 0 ? (Math.random()-0.5)*shakeAmt*2 : 0;
+  const sy = shakeAmt > 0 ? (Math.random()-0.5)*shakeAmt   : 0;
+  if(sx||sy){ c.save(); c.translate(sx,sy); }
+  drawBackground(c);
+  drawZones(c);
+  if(zoneFlash) drawZoneFlash(c);
+  drawCenterLine(c);
+  drawWindIndicator(c);
+  drawBoneCounter(c);
+  for(const rb of restingBones) drawBone(c, rb.x, rb.y, rb.angle, rb.owner);
+  drawParticles(c);
+  if(bone.moving) drawTrail(c);
+  if(dragActive) drawDragLine(c);
+  drawBone(c, bone.x, bone.y, bone.angle, null);
+  drawFloatTexts(c);
+  if(gState==='PLAYER_TURN') drawHint(c);
+  if(sx||sy) c.restore();
+}
+
+function drawBackground(c){
+  const bg = c.createLinearGradient(0,0,0,CH);
+  bg.addColorStop(0,'#141108');
+  bg.addColorStop(1,'#0e0c08');
+  c.fillStyle=bg;
+  c.fillRect(0,0,CW,CH);
+  // subtle horizontal planks
+  c.strokeStyle='rgba(40,32,18,.5)';
+  c.lineWidth=1;
+  for(let y=24;y<CH;y+=24){
+    c.beginPath(); c.moveTo(0,y); c.lineTo(CW,y); c.stroke();
+  }
+}
+
+function drawZones(c){
+  const zones=[
+    {x:0,       w:ZONE_GOAT_END,               color:'#2c1a0c', bcolor:'#3d2a10', label:'GOAT',  emoji:'🐐', moves:0,   fc:'#7a4828'},
+    {x:ZONE_GOAT_END,  w:ZONE_SHEEP_END-ZONE_GOAT_END,  color:'#0c1824', bcolor:'#18283a', label:'SHEEP', emoji:'🐑', moves:1,  fc:'#4a7090'},
+    {x:ZONE_SHEEP_END, w:ZONE_CAMEL_END-ZONE_SHEEP_END, color:'#201808', bcolor:'#382a10', label:'CAMEL', emoji:'🐪', moves:2,  fc:'#906020'},
+    {x:ZONE_CAMEL_END, w:ZONE_HORSE_END-ZONE_CAMEL_END, color:'#201c00', bcolor:'#403800', label:'HORSE', emoji:'🐎', moves:4,  fc:'#c09020', glow:true},
+    {x:ZONE_HORSE_END, w:CW-ZONE_HORSE_END,              color:'#240c0c', bcolor:'#400808', label:'WALL',  emoji:'⚡', moves:0,  fc:'#8a2020'},
+  ];
+  for(const z of zones){
+    c.fillStyle=z.color; c.fillRect(z.x,0,z.w,CH);
+    if(z.glow){
+      const g=c.createLinearGradient(z.x,0,z.x+z.w,0);
+      g.addColorStop(0,'rgba(192,152,0,0)');
+      g.addColorStop(0.5,'rgba(192,152,0,.12)');
+      g.addColorStop(1,'rgba(192,152,0,0)');
+      c.fillStyle=g; c.fillRect(z.x,0,z.w,CH);
+    }
+    // Zone boundary line
+    c.strokeStyle=z.bcolor; c.lineWidth=1;
+    c.beginPath(); c.moveTo(z.x,0); c.lineTo(z.x,CH); c.stroke();
+    // Label
+    c.fillStyle=z.glow?'#b08818':z.fc;
+    c.font=`bold 9px 'Cinzel', 'Georgia', serif`;
+    c.textAlign='center';
+    c.fillText(z.label, z.x+z.w/2, 15);
+    // Emoji (native emoji rendering)
+    c.font='16px serif';
+    c.fillText(z.emoji, z.x+z.w/2, CH-12);
+    // Moves count
+    if(z.moves>0){
+      c.fillStyle=z.glow?'#c09020':z.fc;
+      c.font='10px Georgia, serif';
+      c.textAlign='center';
+      c.fillText('+'+z.moves, z.x+z.w/2, 30);
+    }
+  }
+  // Launch area glow
+  const lg=c.createRadialGradient(BONE_START_X,CH/2,4,BONE_START_X,CH/2,50);
+  lg.addColorStop(0,'rgba(192,152,40,.12)');
+  lg.addColorStop(1,'rgba(0,0,0,0)');
+  c.fillStyle=lg; c.fillRect(0,0,100,CH);
+}
+
+function drawCenterLine(c){
+  c.save();
+  c.setLineDash([4,7]);
+  c.strokeStyle='rgba(90,70,40,.3)';
+  c.lineWidth=1;
+  c.beginPath(); c.moveTo(0,CH/2); c.lineTo(CW,CH/2); c.stroke();
+  c.setLineDash([]); c.restore();
+}
+
+function drawParticles(c){
+  if(!particles.length) return;
+  c.save();
+  for(const p of particles){
+    const t = p.life / p.maxLife;
+    c.globalAlpha = t * 0.9;
+    c.fillStyle = p.col;
+    c.beginPath();
+    c.arc(p.x, p.y, p.r * t, 0, Math.PI*2);
+    c.fill();
+  }
+  c.globalAlpha = 1;
+  c.restore();
+}
+
+function drawTrail(c){
+  if(!boneTrail.length) return;
+  c.save();
+  for(let i=0;i<boneTrail.length;i++){
+    const t = boneTrail[i];
+    const alpha = (i / boneTrail.length) * 0.28;
+    const scale = 0.45 + (i / boneTrail.length) * 0.45;
+    c.save();
+    c.globalAlpha = alpha;
+    c.translate(t.x, t.y);
+    c.rotate(t.angle);
+    // mini ghost bone shape
+    const bw=28*scale, bh=20*scale, br=7*scale;
+    c.beginPath();
+    c.moveTo(-bw/2+br,-bh/2); c.lineTo(bw/2-br,-bh/2);
+    c.arc(bw/2-br,-bh/2+br,br,-Math.PI/2,0);
+    c.lineTo(bw/2,bh/2-br);
+    c.arc(bw/2-br,bh/2-br,br,0,Math.PI/2);
+    c.lineTo(-bw/2+br,bh/2);
+    c.arc(-bw/2+br,bh/2-br,br,Math.PI/2,Math.PI);
+    c.lineTo(-bw/2,-bh/2+br);
+    c.arc(-bw/2+br,-bh/2+br,br,Math.PI,-Math.PI/2);
+    c.closePath();
+    c.fillStyle='rgba(220,200,150,.6)';
+    c.fill();
+    c.restore();
+  }
+  c.restore();
+}
+
+function drawFloatTexts(c){
+  if(!floatTexts.length) return;
+  c.save();
+  for(const f of floatTexts){
+    const t = f.life / f.maxLife;
+    // fade in fast, hold, fade out late
+    const alpha = t < 0.15 ? t/0.15 : t > 0.6 ? (t-0.6)/0.4 * -1 + 1 : 1;
+    c.globalAlpha = Math.max(0, alpha) * 0.92;
+    c.font = `bold ${f.size}px 'Cinzel', Georgia, serif`;
+    c.textAlign = 'center';
+    // subtle shadow
+    c.fillStyle='rgba(0,0,0,0.5)';
+    c.fillText(f.text, f.x+1, f.y+1);
+    c.fillStyle = f.col;
+    c.fillText(f.text, f.x, f.y);
+  }
+  c.globalAlpha = 1;
+  c.restore();
+}
+
+function spawnParticles(x, y, count, cols, speed, spread){
+  for(let i=0;i<count;i++){
+    const angle = Math.random()*Math.PI*2;
+    const spd   = speed * (0.4 + Math.random()*0.6);
+    const life  = 18 + Math.floor(Math.random()*20);
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*spd + (Math.random()-0.5)*spread,
+      vy: Math.sin(angle)*spd - Math.random()*1.5,
+      life, maxLife: life,
+      r: 2 + Math.random()*2.5,
+      col: cols[Math.floor(Math.random()*cols.length)]
+    });
+  }
+}
+
+function drawHint(c){
+  if(bone.moving||dragActive) return;
+  const t = Date.now()/600;
+  const alpha = 0.22+0.18*Math.sin(t);
+  // Pulsing ring
+  c.beginPath();
+  c.arc(bone.x, bone.y, 24, 0, Math.PI*2);
+  c.strokeStyle=`rgba(192,152,40,${alpha})`;
+  c.lineWidth=1.5;
+  c.stroke();
+  // Corner bracket around launch zone — shows the drag area
+  const pad = 52;
+  const bsz = 12; // bracket arm length
+  const lx = bone.x - pad, rx = bone.x + 14;
+  const ty = bone.y - pad, by2 = bone.y + pad;
+  c.strokeStyle=`rgba(160,120,50,${alpha*0.7})`;
+  c.lineWidth=1;
+  // top-left
+  c.beginPath(); c.moveTo(lx+bsz,ty); c.lineTo(lx,ty); c.lineTo(lx,ty+bsz); c.stroke();
+  // top-right
+  c.beginPath(); c.moveTo(rx-bsz,ty); c.lineTo(rx,ty); c.lineTo(rx,ty+bsz); c.stroke();
+  // bottom-left
+  c.beginPath(); c.moveTo(lx+bsz,by2); c.lineTo(lx,by2); c.lineTo(lx,by2-bsz); c.stroke();
+  // bottom-right
+  c.beginPath(); c.moveTo(rx-bsz,by2); c.lineTo(rx,by2); c.lineTo(rx,by2-bsz); c.stroke();
+  // PULL label
+  c.font = `bold 7px 'Cinzel', Georgia, serif`;
+  c.fillStyle = `rgba(140,110,50,${alpha})`;
+  c.textAlign = 'center';
+  c.fillText('PULL', (lx+rx)/2, by2+11);
+}
+
+function drawZoneFlash(c){
+  if(!zoneFlash) return;
+  const z = zoneFlash.zone;
+  const a = Math.max(0, zoneFlash.alpha);
+  let x1, x2, col;
+  if(z==='horse'){ x1=ZONE_CAMEL_END; x2=ZONE_HORSE_END; col=`rgba(210,175,0,${a})`; }
+  else if(z==='camel'){ x1=ZONE_SHEEP_END; x2=ZONE_CAMEL_END; col=`rgba(180,130,0,${a})`; }
+  else if(z==='sheep'){ x1=ZONE_GOAT_END; x2=ZONE_SHEEP_END; col=`rgba(60,110,180,${a})`; }
+  else { x1=0; x2=ZONE_GOAT_END; col=`rgba(140,70,30,${a})`; }
+  c.fillStyle=col;
+  c.fillRect(x1, 0, x2-x1, CH);
+}
+
+function drawBoneCounter(c){
+  // Streak badge — top right when player has 2+ consecutive horses
+  if(playerStreak >= 2 && gState==='PLAYER_TURN'){
+    const t = Date.now()/400;
+    const a = 0.8 + 0.2*Math.sin(t);
+    c.save();
+    c.font = `bold 9px 'Cinzel', Georgia, serif`;
+    c.textAlign = 'right';
+    c.fillStyle = `rgba(232,190,40,${a})`;
+    c.fillText(`🔥 STREAK ×${playerStreak}  +${playerStreak>=2?1:0} BONUS`, CW - 8, 16);
+    c.restore();
+  }
+
+  if(restingBones.length === 0) return;
+  const count = restingBones.length;
+  const warn  = count >= 6;
+  c.save();
+  c.font = `bold 8px 'Cinzel', Georgia, serif`;
+  c.textAlign = 'right';
+  c.fillStyle = warn ? 'rgba(200,90,40,.85)' : 'rgba(110,90,60,.7)';
+  c.fillText(`${count} BONE${count!==1?'S':''} ON FIELD`, CW - 8, CH - 8);
+  if(warn){
+    c.fillStyle='rgba(180,50,20,.045)';
+    c.fillRect(0, 0, CW, CH);
+  }
+  c.restore();
+}
+
+function drawWindIndicator(c){
+  // Only the canvas drift glow stays here — labels moved to HTML wind-badge
+  if(driftActive){
+    const t = Date.now()/200;
+    const a2 = 0.08 + 0.07*Math.sin(t);
+    c.save();
+    c.fillStyle = `rgba(220,80,30,${a2})`;
+    c.fillRect(0, 0, CW, CH);
+    c.restore();
+  }
+}
+
+function updateWindBadge(){
+  const el = document.getElementById('wind-badge');
+  if(!el) return;
+  const w = throwWind;
+  if(Math.abs(w) < 0.002){
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'flex';
+  const maxWind = 0.075;
+  const strength = Math.abs(w) / maxWind; // 0..1
+  const dir = w > 0 ? '→' : '←';
+  const bars = strength < 0.3 ? '▸' : strength < 0.6 ? '▸▸' : '▸▸▸';
+  const label = driftActive ? 'THRUSTER' : 'WIND';
+  el.textContent = `${label}  ${dir} ${bars}`;
+  if(driftActive){
+    el.className = 'wind-badge drift';
+  } else {
+    const col = strength < 0.35 ? 'rgba(140,170,210,.9)'
+              : strength < 0.65 ? 'rgba(190,165,80,.9)'
+              :                   'rgba(220,120,50,.95)';
+    el.className = 'wind-badge';
+    el.style.color = col;
+    el.style.borderColor = col.replace(',.9',',.45').replace(',.95',',.45');
+    el.style.boxShadow = '';
+  }
+}
+
+function drawDragLine(c){
+  const bx=bone.x, by=bone.y;
+  const maxPull=120;
+  const rdx=dragCx-dragSx, rdy=dragCy-dragSy;
+  const dist=Math.sqrt(rdx*rdx+rdy*rdy);
+  const clamped=Math.min(dist,maxPull);
+  const power=clamped/maxPull;
+
+  // Slingshot anchors
+  const a1x=bx, a1y=by-9, a2x=bx, a2y=by+9;
+  c.save();
+  c.setLineDash([3,4]);
+  c.strokeStyle=`rgba(192,120,24,.7)`;
+  c.lineWidth=2;
+  c.beginPath(); c.moveTo(a1x,a1y); c.lineTo(dragCx,dragCy); c.lineTo(a2x,a2y); c.stroke();
+  c.setLineDash([]);
+
+  // Drag point
+  c.beginPath(); c.arc(dragCx,dragCy,5,0,Math.PI*2);
+  c.fillStyle='rgba(192,120,24,.6)'; c.fill();
+
+  // Power bar (above bone)
+  const bw=60, bx2=bx-bw/2, by2=by-34;
+  c.fillStyle='rgba(0,0,0,.5)'; c.fillRect(bx2,by2,bw,5);
+  const pc=power<.5?'#507090':power<.8?'#c07818':'#c02810';
+  c.fillStyle=pc; c.fillRect(bx2,by2,bw*power,5);
+  c.strokeStyle='rgba(80,60,30,.4)'; c.lineWidth=.5; c.strokeRect(bx2,by2,bw,5);
+
+  // Trajectory ghost — includes wind drift so preview is honest
+  if(dist>10){
+    const vx=-(rdx/dist)*clamped*0.172;
+    const vy=-(rdy/dist)*clamped*0.172;
+    let tx=bx, ty=by, tvx=vx, tvy=vy;
+    c.setLineDash([2,6]);
+    c.strokeStyle='rgba(192,152,40,.2)';
+    c.lineWidth=1.5;
+    c.beginPath(); c.moveTo(tx,ty);
+    for(let i=0;i<80;i++){
+      const tspd = Math.sqrt(tvx*tvx+tvy*tvy);
+      if(tspd > 1.5 && Math.abs(throwWind) > 0.001){
+        const ws = Math.min((tspd - 1.5) / 6.0, 1.0);
+        tvx += throwWind * ws;
+      }
+      tx+=tvx; ty+=tvy; tvx*=FRICTION; tvy*=FRICTION;
+      if(ty<10||ty>CH-10||tx<10||tx>CW-10) break;
+      if(Math.sqrt(tvx*tvx+tvy*tvy)<0.5) break;
+      c.lineTo(tx,ty);
+    }
+    c.stroke(); c.setLineDash([]);
+  }
+  c.restore();
+}
+
+function drawBone(c, x, y, angle, owner=null){
+  // owner: null = active (bright), 'player' = gold tint, 'ai' = opponent color tint
+  const isResting = owner !== null;
+  c.save();
+  c.translate(x,y);
+  c.rotate(angle);
+  const bw=28, bh=20, br=7;
+  // resting bones are slightly transparent
+  if(isResting) c.globalAlpha = 0.72;
+  // Shadow
+  c.shadowColor='rgba(0,0,0,.55)';
+  c.shadowBlur=isResting?4:8; c.shadowOffsetX=2; c.shadowOffsetY=3;
+  // Body
+  c.beginPath();
+  c.moveTo(-bw/2+br,-bh/2);
+  c.lineTo(bw/2-br,-bh/2);
+  c.arc(bw/2-br,-bh/2+br,br,-Math.PI/2,0);
+  c.lineTo(bw/2,bh/2-br);
+  c.arc(bw/2-br,bh/2-br,br,0,Math.PI/2);
+  c.lineTo(-bw/2+br,bh/2);
+  c.arc(-bw/2+br,bh/2-br,br,Math.PI/2,Math.PI);
+  c.lineTo(-bw/2,-bh/2+br);
+  c.arc(-bw/2+br,-bh/2+br,br,Math.PI,-Math.PI/2);
+  c.closePath();
+  let grad;
+  if(owner==='player'){
+    // gold tint for player bones
+    grad=c.createLinearGradient(-bw/2,-bh/2,bw/2,bh/2);
+    grad.addColorStop(0,'#f5e8b0');
+    grad.addColorStop(.4,'#d4c480');
+    grad.addColorStop(1,'#a09040');
+  } else if(owner==='ai'){
+    // slightly cooler / grey for ai bones
+    grad=c.createLinearGradient(-bw/2,-bh/2,bw/2,bh/2);
+    grad.addColorStop(0,'#d8d0b8');
+    grad.addColorStop(.4,'#b8b098');
+    grad.addColorStop(1,'#888070');
+  } else {
+    // active bone — bright ivory
+    grad=c.createLinearGradient(-bw/2,-bh/2,bw/2,bh/2);
+    grad.addColorStop(0,'#f2ead4');
+    grad.addColorStop(.4,'#e8dcc4');
+    grad.addColorStop(1,'#ccc0a0');
+  }
+  c.fillStyle=grad; c.fill();
+  c.shadowBlur=0; c.shadowOffsetX=0; c.shadowOffsetY=0;
+  c.strokeStyle= isResting ? 'rgba(100,90,60,.5)' : '#a09070';
+  c.lineWidth=1.2; c.stroke();
+  // Pips
+  c.fillStyle= isResting ? 'rgba(70,55,35,.7)' : '#604838';
+  [[-7,-4],[0,0],[7,4]].forEach(([px,py])=>{
+    c.beginPath(); c.arc(px,py,1.8,0,Math.PI*2); c.fill();
+  });
+  c.globalAlpha=1;
+  c.restore();
+}
+
+// ============================================================
+// PHYSICS
+// ============================================================
+function updatePhysics(){
+  if(!bone.moving) return false;
+  const spd = Math.sqrt(bone.vx**2 + bone.vy**2);
+
+  // update rolling audio
+  updateRoll(spd);
+
+  // record trail position
+  boneTrail.push({x:bone.x, y:bone.y, angle:bone.angle});
+  if(boneTrail.length > 10) boneTrail.shift();
+
+  // ── WIND: scales with current speed — only meaningful at launch, dies as bone slows ──
+  // At full speed this nudges the bone; below speed 1.5 wind contribution is negligible.
+  if(Math.abs(throwWind) > 0.001 && spd > 1.5){
+    const windScale = Math.min((spd - 1.5) / 6.0, 1.0); // 0 at spd≤1.5, ramps to 1 at spd≥7.5
+    bone.vx += throwWind * windScale;
+  }
+
+  // ── MAGNUS EFFECT: spin curves the path perpendicular to travel ──
+  // av > 0 = top-spin = curves downward relative to travel direction
+  const magnusStrength = 0.018;
+  if(spd > 1.0){
+    // force perpendicular to velocity, scaled by spin
+    const velAngle = Math.atan2(bone.vy, bone.vx);
+    bone.vy += Math.cos(velAngle) * bone.av * magnusStrength * spd;
+    bone.vx -= Math.sin(velAngle) * bone.av * magnusStrength * spd;
+  }
+
+  // ── JANK 1: surface micro-perturbations, scale with speed ──
+  if(spd > 1.2){
+    bone.vx += (Math.random()-0.5) * 0.055 * spd;
+    bone.vy += (Math.random()-0.5) * 0.09  * spd;
+  }
+
+  // ── JANK 2: oscillating skip / hop — bone bounces off surface ──
+  bone.jankPhase += 0.22 + spd * 0.012;
+  if(spd > 1.8){
+    // vertical hop sinusoid, amplitude grows with speed
+    const hopAmp = Math.min(spd * 0.055, 1.0);
+    bone.vy += Math.sin(bone.jankPhase * 2.7) * hopAmp;
+    // slight lateral shimmy
+    bone.vx += Math.sin(bone.jankPhase * 1.3 + 0.8) * hopAmp * 0.3;
+  }
+
+  // ── JANK 3: spin driven by speed, noisy, direction set at launch ──
+  const targetAv = bone.spinDir * spd * 0.048 + (Math.random()-0.5) * 0.05;
+  bone.av += (targetAv - bone.av) * 0.18;  // lerp toward target spin
+
+  // ── JANK 4: random skip impulse every 18–35 frames ──
+  bone.skipTimer--;
+  if(bone.skipTimer <= 0 && spd > 2.5){
+    bone.vy += bone.spinDir * (Math.random() * 0.8 - 0.15);
+    bone.vx += (Math.random()-0.5) * 0.4;
+    bone.skipTimer = 18 + Math.floor(Math.random()*18);
+  }
+
+  bone.x += bone.vx; bone.y += bone.vy;
+  bone.angle += bone.av;
+  bone.vx *= FRICTION; bone.vy *= FRICTION;
+  // angular velocity damps slower than linear — keeps spinning late
+  bone.av *= 0.988;
+
+  // ── COLLISION: resting bones ──
+  const BCOLL_R = 15; // effective collision radius per bone
+  for(const rb of restingBones){
+    const dx = bone.x - rb.x;
+    const dy = bone.y - rb.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const minDist = BCOLL_R * 2;
+    if(dist < minDist && dist > 0.001){
+      const nx = dx/dist, ny = dy/dist;
+      // only collide if approaching
+      const approach = bone.vx*nx + bone.vy*ny;
+      if(approach < 0){
+        const restitution = 0.52;
+        bone.vx -= (1 + restitution) * approach * nx;
+        bone.vy -= (1 + restitution) * approach * ny;
+        // friction on collision surface
+        bone.vx *= 0.78; bone.vy *= 0.78;
+        // kick spin
+        bone.av += (Math.random()-0.5)*0.4;
+        // nudge resting bone slightly (visual only — it stays put after)
+        rb.x -= nx * 1.8; rb.y -= ny * 1.8;
+        rb.angle += (Math.random()-0.5)*0.3;
+        // clamp resting bone inside lane
+        rb.y = Math.max(BCOLL_R, Math.min(CH-BCOLL_R, rb.y));
+        rb.x = Math.max(BCOLL_R, Math.min(CW-BCOLL_R, rb.x));
+        // separate to avoid tunneling
+        const overlap = minDist - dist;
+        bone.x += nx * overlap * 0.55;
+        bone.y += ny * overlap * 0.55;
+        playClack(540, 0.08);
+      }
+    }
+  }
+
+  // Walls
+  const r=14;
+  if(bone.y < r){ bone.y=r; bone.vy=Math.abs(bone.vy)*0.38 + 0.2; playClack(420,.05);}
+  if(bone.y > CH-r){ bone.y=CH-r; bone.vy=-Math.abs(bone.vy)*0.38 - 0.2; playClack(420,.05);}
+  if(bone.x < r){ bone.x=r; bone.vx=Math.abs(bone.vx)*0.45;}
+  if(bone.x > CW-r){
+    if(!wallHit){
+      wallHit=true;
+      playWall(); stopRoll();
+      const impactSpd = Math.abs(bone.vx);
+      if(impactSpd > 3) shakeAmt = Math.min(impactSpd * 0.9, 9);
+    }
+    bone.x=CW-r; bone.vx=-Math.abs(bone.vx)*0.15;
+  }
+
+  const finalSpd = Math.sqrt(bone.vx**2+bone.vy**2);
+  if(finalSpd < 0.28){
+    bone.vx=0; bone.vy=0; bone.av=0; bone.moving=false;
+    stopRoll(); boneTrail=[];
+    return true;
+  }
+  return false;
+}
+
+// Flavor lines per face result
+const FACE_LINES = {
+  horse: [
+    "The horse face. Four spaces — a good throw.",
+    "Horse. The bone rolled true.",
+    "Horse. Four forward. The lane remembered you.",
+    "Horse. A clean landing. Four spaces.",
+  ],
+  camel: [
+    "Camel. Two spaces. Not nothing.",
+    "Camel. Steady. You're still in this.",
+    "Camel face. Two spaces forward.",
+    "Camel. The lane gave you something.",
+  ],
+  sheep: [
+    "Sheep. One space. The bone was stingy.",
+    "Sheep. One step. Keep grinding.",
+    "Sheep face. One space — it counts.",
+    "Sheep. You move. Barely.",
+  ],
+  goat: [
+    "Goat. Nothing. The bone laughs at you.",
+    "Goat. No advance. Throw again next turn.",
+    "Goat. The field stays where it is.",
+    "Goat face. The worst face. No move.",
+  ],
+  wall: [
+    "WALL. Too hard — it bounced back. Goat.",
+    "Hit the wall. The bone went too far. Goat.",
+    "Wall crash. No advance. Aim shorter.",
+    "Wall. The bone overshot. Goat result.",
+  ],
+};
+
+function posLine(){
+  const diff = playerPos - oppPos;
+  if(diff >= 6)  return "You're well ahead — don't get comfortable.";
+  if(diff >= 3)  return "You're leading. The field is yours for now.";
+  if(diff <= -6) return `${selCharObj.name} is pulling away.`;
+  if(diff <= -3) return `${selCharObj.name} has the lead. Close the gap.`;
+  return "It's close. Every throw counts.";
+}
+
+function fieldLine(){
+  const n = restingBones.length;
+  if(n >= 10) return "The field is nearly impassable.";
+  if(n >= 7)  return "The lane is thick with bones.";
+  if(n >= 4)  return "The field is getting crowded.";
+  return null;
+}
+
+function nextTurnStatus(){
+  const fl = fieldLine();
+  const w  = Math.abs(throwWind) > 0.03 ?
+    `Wind is ${throwWind > 0 ? 'pushing right' : 'pulling left'}.` : null;
+  const lines = [posLine(), fl, w].filter(Boolean);
+  return lines[Math.floor(Math.random()*lines.length)] ||
+    "Your turn — aim for the 🐎 HORSE zone.";
+}
+
+function onBoneStopped(){
+  const owner = playerTurn ? 'player' : 'ai';
+  restingBones.push({x: bone.x, y: bone.y, angle: bone.angle, owner});
+
+  const isWall = wallHit;
+  const face   = isWall ? 'goat' : getFaceFromX(bone.x);
+  const fd     = FACES[face];
+
+  // ── STREAK ──
+  let streakBonus = 0;
+  if(playerTurn){
+    if(face==='horse'){
+      playerStreak++;
+      if(playerStreak > bestStreak) bestStreak = playerStreak;
+      if(playerStreak >= 2) streakBonus = 1;
+    } else {
+      playerStreak = 0;
+    }
+  }
+
+  // ── PARTICLES ──
+  if(face==='horse'){
+    spawnParticles(bone.x, bone.y, 22, ['#e8c820','#c09020','#f0e060','#fff8a0'], 3.2, 1.0);
+    // extra burst for streak
+    if(streakBonus) spawnParticles(bone.x, bone.y, 14, ['#ff9040','#ffd060','#fff'], 4.5, 1.5);
+  } else if(face==='camel'){
+    spawnParticles(bone.x, bone.y, 10, ['#c07820','#a06010','#e09030'], 2.2, 0.6);
+  } else if(isWall){
+    spawnParticles(bone.x, bone.y, 14, ['#c03020','#e05030','#ff8060'], 3.0, 1.2);
+  }
+
+  // Zone flash
+  zoneFlash = {zone: face, alpha: 0.48};
+
+  // Float text at landing spot
+  const ftLabel = isWall ? '⚡ WALL'
+    : face==='horse' ? (streakBonus ? `🐎 HORSE +${fd.moves+streakBonus}🔥` : `🐎 HORSE +${fd.moves}`)
+    : face==='camel' ? `🐪 CAMEL +${fd.moves}`
+    : face==='sheep' ? `🐑 SHEEP +${fd.moves}`
+    : '🐐 GOAT';
+  const ftCol = isWall?'#e05030': face==='horse'?'#e8c820': face==='camel'?'#c08020': face==='sheep'?'#5080c0':'#805030';
+  floatTexts.push({
+    x: bone.x, y: bone.y - 10,
+    vy: -1.1, life: 52, maxLife: 52,
+    text: ftLabel, col: ftCol, size: face==='horse' ? 13 : 11
+  });
+
+  // Audio — thud + chime
+  playThud(isWall ? 'goat' : face);
+  if(face==='horse') setTimeout(()=>playChime(), 80);
+  if(streakBonus)    setTimeout(()=>playStreakChime(), 280);
+
+  // Status flavor
+  let flavorLine;
+  if(streakBonus && face==='horse'){
+    const streakLines = [
+      `STREAK ×${playerStreak} — the bone remembers the way. +${fd.moves+streakBonus} spaces.`,
+      `Back-to-back horse. Streak bonus. +${fd.moves+streakBonus} spaces total.`,
+      `Horse again. The field knows your hand. +${fd.moves+streakBonus}.`,
+    ];
+    flavorLine = streakLines[Math.floor(Math.random()*streakLines.length)];
+  } else {
+    const flavorPool = isWall ? FACE_LINES.wall : FACE_LINES[face];
+    flavorLine = flavorPool[Math.floor(Math.random()*flavorPool.length)];
+  }
+  setStatus(flavorLine);
+
+  showResult({...fd, moves: fd.moves + streakBonus}, playerTurn);
+  if(playerTurn) faceCounts[face]++;
+  const moveAmt = fd.moves + streakBonus;
+
+  setTimeout(()=>{
+    hideResult();
+    if(playerTurn){
+      playerPos = Math.min(playerPos+moveAmt, TRACK_LEN);
+      setTokenPositions(playerPos, oppPos, true);
+      updatePosDisplay();
+      if(playerPos>=TRACK_LEN){ setTimeout(()=>endGame(true),500); return; }
+      playerTurn=false;
+      gState='AI_THINKING';
+      // Character reaction to player's result
+      const react = selCharObj.reactLines;
+      let reactionLine = null;
+      if(streakBonus && face==='horse' && react.yourStreak)
+        reactionLine = react.yourStreak[Math.floor(Math.random()*react.yourStreak.length)];
+      else if(face==='horse' && react.yourHorse)
+        reactionLine = react.yourHorse[Math.floor(Math.random()*react.yourHorse.length)];
+      // Fall back to aiLines if no reaction matched
+      const thinkLine = reactionLine || selCharObj.aiLines[Math.floor(Math.random()*selCharObj.aiLines.length)];
+      setStatus(thinkLine);
+      updateTurnBadge();
+      setTimeout(doAITurn, 1400);
+    } else {
+      oppPos = Math.min(oppPos+moveAmt, TRACK_LEN);
+      setTokenPositions(playerPos, oppPos, true);
+      updatePosDisplay();
+      if(oppPos>=TRACK_LEN){ setTimeout(()=>endGame(false),500); return; }
+      playerTurn=true; turnCount++;
+      gState='PLAYER_TURN';
+      resetBone();
+
+      // ── AI SELF-REACTION ──
+      const react = selCharObj.reactLines;
+      let aiReact = null;
+      if(isWall && react.selfWall)
+        aiReact = react.selfWall[Math.floor(Math.random()*react.selfWall.length)];
+      else if(face==='horse' && react.selfHorse)
+        aiReact = react.selfHorse[Math.floor(Math.random()*react.selfHorse.length)];
+      else if((face==='goat'||face==='sheep') && react.selfGoat)
+        aiReact = react.selfGoat[Math.floor(Math.random()*react.selfGoat.length)];
+      if(aiReact) setStatus(aiReact);
+
+      // ── DRIFT EVENT ──
+      driftTimer--;
+      const applyWindStatus = () => {
+        if(driftTimer <= 0){
+          driftActive = true;
+          driftTimer  = 5 + Math.floor(Math.random()*4);
+          const dir  = Math.random() < 0.5 ? 1 : -1;
+          throwWind  = dir * (0.052 + Math.random()*0.022);
+          const driftLines = [
+            "THRUSTER FIRE — the Drift adjusts course. Wind is strong this throw.",
+            "COURSE CORRECTION — compensate for drift. Wind spike.",
+            "The Drift's engines fired. The air in the lane shifts.",
+            "Thruster burst. The bone will feel it.",
+          ];
+          setStatus(driftLines[Math.floor(Math.random()*driftLines.length)]);
+          updateWindBadge();
+        } else {
+          driftActive = false;
+          rollWind();
+          updateWindBadge();
+          setStatus(nextTurnStatus());
+        }
+      };
+      if(aiReact) setTimeout(applyWindStatus, 900);
+      else        applyWindStatus();
+      updateTurnBadge();
+    }
+  }, 1800);
+}
+
+function getFaceFromX(x){
+  if(x<=ZONE_GOAT_END)  return 'goat';
+  if(x<=ZONE_SHEEP_END) return 'sheep';
+  if(x<=ZONE_CAMEL_END) return 'camel';
+  if(x<=ZONE_HORSE_END) return 'horse';
+  return 'goat';
+}
+
+// ============================================================
+// AI
+// ============================================================
+function doAITurn(){
+  const ch=selCharObj;
+  gState='AI_TURN';
+  resetBone();
+  function randG(mean,std){
+    let s=0; for(let i=0;i<6;i++) s+=Math.random();
+    return mean+(s-3)*std/1.5;
+  }
+
+  // Comeback curve: AI tightens when behind, loosens when far ahead
+  const gap = oppPos - playerPos; // positive = AI leading
+  const varianceMod = gap >= 5 ? 1.35 :   // far ahead — gets sloppy
+                      gap >= 2 ? 1.0  :    // slight lead — normal
+                      gap >= -2 ? 0.88 :   // close — focuses up
+                                  0.72;    // behind — locks in
+
+  const baseVariance = ch.variance * varianceMod;
+  let targetX = randG(ch.targetX, baseVariance);
+
+  // Drift event affects AI too
+  if(driftActive){
+    targetX += throwWind * 180; // wind pushes AI's aim in same direction
+  }
+
+  const travel = Math.max(60, targetX - BONE_START_X);
+  const vx = travel / SPACE_SUM;
+  const vy = (Math.random()-.5)*1.2;
+  rollWind();
+  updateWindBadge();
+  bone.vx = vx; bone.vy = vy;
+  bone.av = (Math.random()-.5)*0.25;
+  bone.spinDir = (vy < 0) ? 1 : -1;
+  bone.jankPhase = Math.random()*Math.PI*2;
+  bone.skipTimer = 12 + Math.floor(Math.random()*14);
+  bone.moving=true;
+  wallHit=false;
+  startRoll();
+}
+
+// ============================================================
+// INPUT
+// ============================================================
+function initInput(){
+  const c=canvas();
+  function scale(){ return CW / c.getBoundingClientRect().width; }
+  function getXY(e){
+    const r=c.getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    const s=scale();
+    return {x:(src.clientX-r.left)*s, y:(src.clientY-r.top)*s};
+  }
+  function onDown(e){
+    if(gState!=='PLAYER_TURN'||bone.moving) return;
+    const p=getXY(e);
+    const dist=Math.sqrt((p.x-bone.x)**2+(p.y-bone.y)**2);
+    if(dist>38) return;
+    dragActive=true; dragSx=p.x; dragSy=p.y; dragCx=p.x; dragCy=p.y;
+    e.preventDefault();
+  }
+  function onMove(e){
+    if(!dragActive) return;
+    const p=getXY(e);
+    dragCx=p.x; dragCy=p.y;
+    e.preventDefault();
+  }
+  function onUp(e){
+    if(!dragActive) return;
+    dragActive=false;
+    const dx=dragCx-dragSx, dy=dragCy-dragSy;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<6){ return; }
+    const maxPull=120, clamped=Math.min(dist,maxPull), ratio=clamped/dist;
+    const POWER=0.172;   // was 0.148 — easier to reach wall
+    bone.vx=-dx*ratio*POWER;
+    bone.vy=-dy*ratio*POWER;
+    // spin direction matches the throw's lateral component
+    bone.spinDir = (bone.vy < 0) ? 1 : -1;
+    bone.av=(Math.random()-.5)*0.3;
+    bone.jankPhase=Math.random()*Math.PI*2;  // start mid-oscillation for variety
+    bone.skipTimer = 12 + Math.floor(Math.random()*14);
+    bone.moving=true; wallHit=false;
+    gState='BONE_MOVING';
+    setStatus('');
+    const wb = document.getElementById('wind-badge');
+    if(wb) wb.style.display='none';
+    startRoll();
+    e.preventDefault();
+  }
+  c.addEventListener('mousedown',onDown);
+  c.addEventListener('mousemove',onMove);
+  c.addEventListener('mouseup',onUp);
+  c.addEventListener('touchstart',onDown,{passive:false});
+  c.addEventListener('touchmove',onMove,{passive:false});
+  c.addEventListener('touchend',onUp,{passive:false});
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function resetBone(){
+  bone.x=BONE_START_X; bone.y=BONE_START_Y;
+  bone.vx=0; bone.vy=0; bone.angle=0; bone.av=0; bone.moving=false;
+  bone.jankPhase=0; bone.spinDir=1; bone.skipTimer=0;
+  throwWind=0;
+  dragActive=false;
+}
+function setStatus(txt){ const el=document.getElementById('st'); if(el) el.textContent=txt; }
+function showResult(fd, isPlayer){
+  const rb=document.getElementById('result-box');
+  if(!rb) return;
+  rb.classList.remove('hidden');
+  document.getElementById('r-emoji').textContent=fd.emoji;
+  const rname=document.getElementById('r-name');
+  rname.textContent=fd.name; rname.style.color=fd.color;
+  document.getElementById('r-moves').textContent=fd.moves>0?`+${fd.moves} space${fd.moves>1?'s':''}`: 'No advance';
+  rb.classList.add('fade-up');
+  setTimeout(()=>rb.classList.remove('fade-up'),500);
+}
+function hideResult(){ const rb=document.getElementById('result-box'); if(rb) rb.classList.add('hidden'); }
+function updateTurnBadge(){
+  const tb=document.getElementById('turn-badge');
+  if(!tb) return;
+  if(playerTurn){ tb.textContent='YOUR TURN'; tb.classList.add('lit'); }
+  else { tb.textContent=`${selCharObj?.name||'OPPONENT'}'S TURN`; tb.classList.remove('lit'); }
+}
+function updatePosDisplay(){
+  document.getElementById('p-pos-txt').textContent=`Space ${playerPos}`;
+  document.getElementById('o-pos-txt').textContent=`Space ${oppPos}`;
+}
+
+// ============================================================
+// GAME OVER
+// ============================================================
+function endGame(playerWon){
+  if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+  if(playerWon) playChime();
+  else playFail();
+
+  // Update session record
+  if(selChar){
+    if(playerWon) sessionRecord[selChar].w++;
+    else          sessionRecord[selChar].l++;
+  }
+
+  document.getElementById('res-badge').textContent=playerWon?'VICTORY':'DEFEAT';
+  document.getElementById('res-badge').className='res-badge '+(playerWon?'win-b':'lose-b');
+  document.getElementById('res-title').textContent=playerWon?'YOUR HORSE WINS':`${selCharObj.name} WINS`;
+  document.getElementById('res-title').className='res-title '+(playerWon?'win-t':'lose-t');
+  document.getElementById('res-quote').textContent=playerWon?selCharObj.winText:selCharObj.loseText;
+  document.getElementById('rs-turns').textContent=turnCount;
+  document.getElementById('rs-horse').textContent=faceCounts.horse;
+  document.getElementById('rs-camel').textContent=faceCounts.camel;
+  document.getElementById('rs-goat').textContent=faceCounts.goat;
+  document.getElementById('rs-streak').textContent=bestStreak;
+
+  // Session record display
+  const rec = sessionRecord[selChar];
+  document.getElementById('rec-name').textContent = selCharObj.name;
+  document.getElementById('rec-wl').textContent   = `${rec.w} W — ${rec.l} L`;
+
+  showScreen('result-screen');
+}
+
+// ============================================================
+// SCREENS
+// ============================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const s=document.getElementById(id); if(s) s.classList.add('active');
+  if(id==='game-screen') setTimeout(startLoop,100);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+buildMenu();
+initInput();
+
+document.getElementById('start-btn').addEventListener('click',()=>{
+  if(!selChar) return;
+  startGame();
+});
+
+// REMATCH — restart immediately with same opponent, keep avatar URLs
+document.getElementById('rematch-btn').addEventListener('click',()=>{
+  if(!selChar) return;
+  zoneFlash=null; shakeAmt=0;
+  startGame();
+});
+
+// CHANGE OPPONENT — back to full menu
+document.getElementById('replay-btn').addEventListener('click',()=>{
+  selChar=null; selCharObj=null;
+  zoneFlash=null; shakeAmt=0;
+  document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('start-btn').disabled=true;
+  showScreen('menu-screen');
+  buildMenu();
+});
+
+// Window resize: re-layout track tokens
+window.addEventListener('resize',()=>{
+  if(gState!=='MENU') setTokenPositions(playerPos,oppPos);
+});
+
+// Rules overlay
+document.getElementById('rules-btn').addEventListener('click',()=>{
+  document.getElementById('rules-overlay').classList.add('active');
+});
+document.getElementById('rules-close').addEventListener('click',()=>{
+  document.getElementById('rules-overlay').classList.remove('active');
+});
+document.getElementById('rules-overlay').addEventListener('click',(e)=>{
+  if(e.target===e.currentTarget) e.currentTarget.classList.remove('active');
+});
+</script>
+</body>
+</html>
