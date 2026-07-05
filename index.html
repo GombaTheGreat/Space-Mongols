@@ -277,6 +277,117 @@
       color: var(--ink-primary);
     }
 
+    .soundtrack-console {
+      margin-top: 1.05rem;
+      max-width: 620px;
+      border: 1px solid var(--line-soft);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(199, 154, 75, 0.18), transparent 14rem),
+        linear-gradient(135deg, rgba(12, 18, 28, 0.88), rgba(5, 7, 11, 0.68));
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      padding: 1rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .soundtrack-console::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent, rgba(255, 236, 190, 0.08), transparent),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 18px);
+      opacity: 0.34;
+      pointer-events: none;
+    }
+    .soundtrack-head, .soundtrack-controls {
+      position: relative;
+      z-index: 1;
+    }
+    .soundtrack-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+    }
+    .soundtrack-label {
+      color: var(--accent-brass);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+    }
+    .soundtrack-title {
+      display: block;
+      margin-top: 0.22rem;
+      font-size: 1.02rem;
+      color: var(--ink-primary);
+    }
+    .soundtrack-note {
+      color: var(--ink-muted);
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+    .soundtrack-controls {
+      display: grid;
+      grid-template-columns: auto auto minmax(190px, 1fr);
+      gap: 0.65rem;
+      align-items: center;
+    }
+    .audio-btn {
+      min-height: 42px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line-soft);
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--ink-primary);
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.44rem;
+      padding: 0 0.9rem;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+    }
+    .audio-btn:hover, .audio-btn:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(255, 225, 160, 0.46);
+      outline: none;
+    }
+    .audio-btn.primary {
+      color: #140f08;
+      background: linear-gradient(135deg, var(--accent-brass), #e0b65d);
+      border-color: rgba(255, 225, 160, 0.68);
+      box-shadow: 0 12px 28px rgba(199, 154, 75, 0.16);
+    }
+    .audio-btn.is-playing {
+      color: var(--ink-primary);
+      background: rgba(208, 107, 53, 0.22);
+      border-color: rgba(208, 107, 53, 0.48);
+    }
+    .volume-control {
+      min-height: 42px;
+      border: 1px solid var(--line-cold);
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.035);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 0.85rem;
+      color: var(--ink-secondary);
+      font-size: 0.84rem;
+      font-weight: 750;
+    }
+    .volume-control input {
+      width: 100%;
+      accent-color: var(--accent-brass);
+      cursor: pointer;
+    }
+
     .hero-panel {
       position: relative;
       width: 100%;
@@ -855,6 +966,7 @@
       .poster-image-shell { min-height: 560px; }
       .pov-grid { grid-template-columns: 1fr; }
       .armada-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .soundtrack-controls { grid-template-columns: auto auto 1fr; }
       .nav { align-items: flex-start; flex-direction: column; padding: 0.8rem 0; }
       .nav-links { justify-content: flex-start; }
     }
@@ -863,6 +975,9 @@
       .briefing-card dl { grid-template-columns: 1fr; }
       h1 { font-size: clamp(3rem, 17vw, 4rem); }
       .nav-links a { padding: 0.55rem 0.62rem; }
+      .soundtrack-head, .soundtrack-controls { grid-template-columns: 1fr; }
+      .soundtrack-head { display: grid; }
+      .soundtrack-note { white-space: normal; }
       .hero { min-height: auto; }
       .card-art { min-height: 420px; }
       .poster-image-shell { min-height: 470px; }
@@ -898,6 +1013,21 @@
           <div class="button-row">
             <a class="button primary" href="#characters">Meet the Characters</a>
             <a class="button ghost" href="#setting">Explore the Drift</a>
+          </div>
+          <div class="soundtrack-console" aria-label="Opening theme audio player">
+            <audio id="openingTheme" preload="metadata" src="assets/audio/golden-steppes-instrumental.mp3"></audio>
+            <div class="soundtrack-head">
+              <div>
+                <span class="soundtrack-label">Opening theme</span>
+                <strong class="soundtrack-title">Golden Steppes</strong>
+              </div>
+              <span class="soundtrack-note">Instrumental orchestra</span>
+            </div>
+            <div class="soundtrack-controls">
+              <button id="themePlay" class="audio-btn primary" type="button" aria-label="Play opening theme"><span aria-hidden="true">▶</span><span>Play</span></button>
+              <button id="themeStop" class="audio-btn" type="button" aria-label="Stop opening theme"><span aria-hidden="true">■</span><span>Stop</span></button>
+              <label class="volume-control" for="themeVolume"><span>Volume</span><input id="themeVolume" type="range" min="0" max="1" step="0.01" value="0.65"></label>
+            </div>
           </div>
         </div>
         <aside class="hero-panel" aria-label="Khanate briefing visual">
@@ -1062,6 +1192,46 @@
   </footer>
 
   <script>
+    const themeAudio = document.querySelector('#openingTheme');
+    const themePlay = document.querySelector('#themePlay');
+    const themeStop = document.querySelector('#themeStop');
+    const themeVolume = document.querySelector('#themeVolume');
+
+    function setThemePlaying(isPlaying) {
+      if (!themePlay) return;
+      themePlay.classList.toggle('is-playing', isPlaying);
+      themePlay.setAttribute('aria-label', isPlaying ? 'Pause opening theme' : 'Play opening theme');
+      themePlay.innerHTML = isPlaying ? '<span aria-hidden="true">❚❚</span><span>Pause</span>' : '<span aria-hidden="true">▶</span><span>Play</span>';
+    }
+
+    if (themeAudio && themePlay && themeStop && themeVolume) {
+      themeAudio.volume = Number(themeVolume.value);
+      themePlay.addEventListener('click', async () => {
+        if (themeAudio.paused) {
+          try {
+            await themeAudio.play();
+            setThemePlaying(true);
+          } catch (error) {
+            setThemePlaying(false);
+          }
+        } else {
+          themeAudio.pause();
+          setThemePlaying(false);
+        }
+      });
+      themeStop.addEventListener('click', () => {
+        themeAudio.pause();
+        themeAudio.currentTime = 0;
+        setThemePlaying(false);
+      });
+      themeVolume.addEventListener('input', () => {
+        themeAudio.volume = Number(themeVolume.value);
+      });
+      themeAudio.addEventListener('ended', () => setThemePlaying(false));
+      themeAudio.addEventListener('pause', () => setThemePlaying(false));
+      themeAudio.addEventListener('play', () => setThemePlaying(true));
+    }
+
     const characters = [
       {
         name: "Sarnai",
